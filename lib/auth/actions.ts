@@ -1,0 +1,126 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
+import { User } from "@/models/User";
+import { IndividualClient } from "@/models/IndividualClient";
+import { connectToDatabase } from "@/lib/db";
+import { createSession, deleteSession } from "@/lib/auth/session";
+import { getAuth } from "@/lib/auth/dal";
+import { buildId } from "@/lib/ids";
+import { type Role } from "@/lib/auth/roles";
+import { writeAuditLog } from "@/services/audit";
+
+const RegisterSchema = z.object({
+  firstName: z.string().min(1).trim(),
+  lastName: z.string().min(1).trim(),
+  email: z.email().trim().toLowerCase(),
+  password: z.string().min(8),
+});
+
+export type AuthState =
+  | { errors?: Record<string, string[]>; message?: string }
+  | undefined;
+
+export async function register(
+  _prev: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const parsed = RegisterSchema.safeParse({
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const { firstName, lastName, email, password } = parsed.data;
+
+  await connectToDatabase();
+  const existing = await User.findOne({ email }).lean();
+  if (existing) {
+    return { message: "An account with this email already exists." };
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const userId = buildId("USR", (await User.countDocuments().lean()) + 1);
+
+  const user = await User.create({
+    userId,
+    firstName,
+    lastName,
+    email,
+    passwordHash,
+    role: "INDIVIDUAL_CLIENT" as Role,
+  });
+
+  await IndividualClient.create({
+    clientId: buildId("CLI", (await User.countDocuments().lean()) + 1),
+    userId: user._id,
+    firstName,
+    lastName,
+    email,
+    status: "onboarding",
+  });
+
+  await writeAuditLog({
+    actor: user.userId,
+    action: "auth.register",
+    resource: "user",
+    resourceId: user.userId,
+    metadata: { email },
+  });
+
+  await createSession(user._id.toString(), "INDIVIDUAL_CLIENT");
+  redirect("/dashboard");
+}
+
+export async function login(
+  _prev: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const email = String(formData.get("email") ?? "").toLowerCase().trim();
+  const password = String(formData.get("password") ?? "");
+
+  if (!email || !password) {
+    return { message: "Email and password are required." };
+  }
+
+  await connectToDatabase();
+  const user = await User.findOne({ email }).lean();
+  if (!user) {
+    return { message: "Invalid email or password." };
+  }
+
+  const valid = await bcrypt.compare(password, user.passwordHash);
+  if (!valid) {
+    return { message: "Invalid email or password." };
+  }
+
+  await writeAuditLog({
+    actor: user.userId,
+    action: "auth.login",
+    resource: "user",
+    resourceId: user.userId,
+  });
+
+  await createSession(user._id.toString(), user.role);
+  redirect("/dashboard");
+}
+
+export async function logout(): Promise<void> {
+  const auth = await getAuth();
+  if (auth) {
+    await writeAuditLog({
+      actor: auth.user.id,
+      action: "auth.logout",
+      resource: "user",
+    });
+  }
+  await deleteSession();
+  redirect("/login");
+}

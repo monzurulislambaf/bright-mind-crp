@@ -10,6 +10,7 @@ import { createSession, deleteSession } from "@/lib/auth/session";
 import { getAuth } from "@/lib/auth/dal";
 import { nextId } from "@/lib/ids";
 import { type Role } from "@/lib/auth/roles";
+import { INTERNAL_ROLES, type InternalRole } from "@/lib/auth/roles";
 import { writeAuditLog } from "@/services/audit";
 
 const RegisterSchema = z.object({
@@ -80,7 +81,7 @@ export async function register(
   });
 
   await createSession(user._id.toString(), "INDIVIDUAL_CLIENT");
-  redirect("/dashboard");
+  redirect("/portal");
 }
 
 export async function login(
@@ -117,7 +118,8 @@ export async function login(
   });
 
   await createSession(user._id.toString(), user.role);
-  redirect("/dashboard");
+  const internal = INTERNAL_ROLES.includes(user.role as InternalRole);
+  redirect(internal ? "/crm" : "/portal");
 }
 
 export async function logout(): Promise<void> {

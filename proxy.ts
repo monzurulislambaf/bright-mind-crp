@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/lib/auth/session";
+import { INTERNAL_ROLES, type InternalRole } from "@/lib/auth/roles";
+import type { Role } from "@/lib/auth/roles";
 
-const PROTECTED_PREFIXES = ["/dashboard"];
+const PROTECTED_PREFIXES = ["/dashboard", "/crm", "/portal"];
 
 // AUTH_SESSION_COOKIE kept in sync with lib/auth/session.ts
 const SESSION_COOKIE = "bm_session";
+
+function hubFor(session: { role: string } | null): string {
+  if (!session) return "/login";
+  const role = session.role as Role;
+  return INTERNAL_ROLES.includes(role as InternalRole)
+    ? "/crm"
+    : "/portal";
+}
 
 export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -20,7 +30,7 @@ export default async function proxy(req: NextRequest) {
   }
 
   if (isAuthPage && session?.userId) {
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+    return NextResponse.redirect(new URL(hubFor(session), req.nextUrl));
   }
 
   return NextResponse.next();

@@ -8,7 +8,7 @@ import { User } from "@/models/User";
 import { Case } from "@/models/Case";
 import { connectToDatabase } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/dal";
-import { buildId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 
 export type PortalPerson = {
   role: string;
@@ -52,7 +52,7 @@ export async function getPortalPerson(): Promise<PortalPerson> {
     // created on sign-up get a linked client record created on first visit.
     if (!c) {
       const u = await User.findById(user.id).lean();
-      const clientId = buildId("CLI", (await IndividualClient.countDocuments().lean()) + 1);
+      const clientId = await nextId("CLI");
       await IndividualClient.create({
         clientId,
         userId: new mongoose.Types.ObjectId(user.id),

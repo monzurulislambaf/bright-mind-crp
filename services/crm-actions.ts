@@ -10,7 +10,7 @@ import { Solicitor } from "@/models/Solicitor";
 import { Psychologist } from "@/models/Psychologist";
 import { IndividualClient } from "@/models/IndividualClient";
 import { connectToDatabase } from "@/lib/db";
-import { buildId, buildYearId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -65,13 +65,18 @@ export async function createLeadManual(
     return { ok: false, message: "A lead with this email already exists." };
   }
 
-  const seq = (await Lead.countDocuments().lean()) + 1;
-  await Lead.create({ leadId: buildId("LEAD", seq), qualifier: "general", ...parsed.data });
+  await Lead.create({
+    leadId: await nextId("LEAD"),
+    qualifier: "general",
+    ...parsed.data,
+  });
 
   await writeAuditLog({
     actor: user.id,
-    action: "lead.created",
+    actorUserId: user.id,
+    action: "CREATE",
     resource: "lead",
+    resourceType: "LEAD",
     metadata: { via: "manual" },
   });
 
@@ -228,9 +233,8 @@ export async function qualifyLead(
     return { ok: false, message: "This lead is already qualified." };
   }
 
-  const seq = (await QualifiedLead.countDocuments().lean()) + 1;
   await QualifiedLead.create({
-    qualifiedId: buildYearId("QL", seq),
+    qualifiedId: await nextId("QL"),
     lead: lead._id,
     kind,
     notes: notes ?? "",
@@ -241,10 +245,12 @@ export async function qualifyLead(
 
   await writeAuditLog({
     actor: user.id,
-    action: "lead.qualified",
+    actorUserId: user.id,
+    action: "STATUS_CHANGE",
     resource: "lead",
+    resourceType: "LEAD",
     resourceId: lead.leadId,
-    metadata: { kind },
+    metadata: { kind, event: "lead.qualified" },
   });
 
   revalidatePath("/crm/leads");
@@ -267,8 +273,10 @@ export async function convertQualifiedLead(
   const lead = await Lead.findById(qualified.lead);
   if (!lead) return { ok: false, message: "Lead not found." };
 
+  const orgId = await nextId("ORG");
   const org = await Organisation.create({
-    orgId: buildId("ORG", (await Organisation.countDocuments().lean()) + 1),
+    orgId,
+    organisationId: orgId,
     name: lead.company || lead.firstName || "Organisation",
     type: qualified.kind === "solicitor" ? "solicitor" : "other",
     status: "pending",
@@ -276,7 +284,7 @@ export async function convertQualifiedLead(
 
   if (qualified.kind === "solicitor") {
     await Solicitor.create({
-      solicitorId: buildId("SOL", (await Solicitor.countDocuments().lean()) + 1),
+      solicitorId: await nextId("SOL"),
       organisation: org._id,
       contactName: `${lead.firstName} ${lead.lastName}`.trim(),
       email: lead.email,
@@ -284,7 +292,7 @@ export async function convertQualifiedLead(
     });
   } else if (qualified.kind === "psychologist") {
     await Psychologist.create({
-      psychologistId: buildId("PSY", (await Psychologist.countDocuments().lean()) + 1),
+      psychologistId: await nextId("PSY"),
       firstName: lead.firstName,
       lastName: lead.lastName,
       email: lead.email,
@@ -292,7 +300,7 @@ export async function convertQualifiedLead(
     });
   } else {
     await IndividualClient.create({
-      clientId: buildId("CLI", (await IndividualClient.countDocuments().lean()) + 1),
+      clientId: await nextId("CLI"),
       firstName: lead.firstName,
       lastName: lead.lastName,
       email: lead.email,
@@ -309,8 +317,10 @@ export async function convertQualifiedLead(
 
   await writeAuditLog({
     actor: user.id,
-    action: "lead.converted",
+    actorUserId: user.id,
+    action: "CONVERT",
     resource: "lead",
+    resourceType: "LEAD",
     resourceId: lead.leadId,
     metadata: { kind: qualified.kind, orgId: org.orgId },
   });
@@ -331,7 +341,6 @@ export async function importLeads(rows: unknown[]): Promise<CrmActionState> {
   let duplicates = 0;
   let invalid = 0;
 
-  let seq = (await Lead.countDocuments().lean()) + 1;
   const existingEmails = new Set<string>(
     (await Lead.find({}).select("email")).map((l) => l.email ?? "").filter(Boolean)
   );
@@ -354,7 +363,7 @@ export async function importLeads(rows: unknown[]): Promise<CrmActionState> {
         source: String(row.source ?? "csv_import"),
         notes: String(row.notes ?? ""),
       });
-      await Lead.create({ leadId: buildId("LEAD", seq++), ...parsed });
+      await Lead.create({ leadId: await nextId("LEAD"), ...parsed });
       existingEmails.add(email);
       created += 1;
     } catch {

@@ -92,11 +92,26 @@ export default function ForSolicitorsPage() {
       </section>
 
       <section className="section-pad">
-        <div className="container-page max-w-3xl">
+        <div className="container-page grid gap-12 lg:grid-cols-2 lg:items-start">
           <FadeIn>
             <SectionHeading eyebrow="Why Bright Mind" title="Built for instruction quality" />
             <ul className="mt-2 space-y-3">
               {solicitorContent.why.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+                  <span className="text-base-content/80">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </FadeIn>
+          <FadeIn delay={0.08}>
+            <SectionHeading
+              eyebrow="Instruction checklist"
+              title="What to include when you instruct"
+              subtitle="Help us triage efficiently and route the matter into the right workflow."
+            />
+            <ul className="mt-2 space-y-3">
+              {solicitorContent.instructionChecklist.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
                   <span className="text-base-content/80">{item}</span>

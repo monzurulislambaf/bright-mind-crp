@@ -63,15 +63,29 @@ export default function ServicesPage() {
                   className="surface-card scroll-mt-28"
                 >
                   <div className="card-body gap-3">
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                       <span className="font-display text-sm tracking-widest text-base-content/40">
                         {service.number}
                       </span>
                       <h3 className="font-display text-xl font-semibold text-primary">
                         {service.title}
                       </h3>
+                      <span className="badge badge-soft badge-primary badge-sm">
+                        {service.rate}
+                      </span>
                     </div>
                     <p className="text-base-content/70">{service.description}</p>
+                    <ul className="mt-1 space-y-2">
+                      {service.details.map((detail) => (
+                        <li
+                          key={detail}
+                          className="flex items-start gap-2 text-sm text-base-content/75"
+                        >
+                          <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                          {detail}
+                        </li>
+                      ))}
+                    </ul>
                     <ul className="mt-2 grid gap-2 sm:grid-cols-2">
                       {service.useCases.map((useCase) => (
                         <li

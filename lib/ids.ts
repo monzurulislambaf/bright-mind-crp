@@ -1,4 +1,8 @@
-type IdKind =
+import "server-only";
+import { connectToDatabase } from "@/lib/db";
+import { IdSequence } from "@/models/IdSequence";
+
+export type IdKind =
   | "USR"
   | "LEAD"
   | "QL"
@@ -12,7 +16,22 @@ type IdKind =
   | "APT"
   | "TSK"
   | "TKT"
-  | "RPT";
+  | "RPT"
+  | "ONB"
+  | "QUO"
+  | "INV"
+  | "PAY"
+  | "AUD"
+  | "CMP";
+
+const YEAR_BASED: ReadonlySet<IdKind> = new Set([
+  "QL",
+  "CASE",
+  "TSK",
+  "TKT",
+  "APT",
+  "RPT",
+]);
 
 function pad(value: number, length = 6): string {
   return String(value).padStart(length, "0");
@@ -26,40 +45,27 @@ function randomSegment(): string {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
+function prefixFor(kind: IdKind): string {
+  return `BM-${kind}`;
+}
+
 /**
  * Builds a unique identifier such as BM-CASE-2026-000123.
- * Deterministic-prefix generators (USR, LEAD, etc.) accept a sequence number.
+ * Prefer `nextId()` for production creates (atomic sequence).
  */
 export function buildId(kind: IdKind, seq?: number): string {
   const p = pad(seq ?? Math.floor(Math.random() * 999999) + 1);
-  switch (kind) {
-    case "USR":
-      return `BM-USR-${p}`;
-    case "LEAD":
-      return `BM-LEAD-${p}`;
-    case "CON":
-      return `BM-CON-${p}`;
-    case "ORG":
-      return `BM-ORG-${p}`;
-    case "SOL":
-      return `BM-SOL-${p}`;
-    case "PSY":
-      return `BM-PSY-${p}`;
-    case "CLI":
-      return `BM-CLI-${p}`;
-    case "DOC":
-      return `BM-DOC-${p}`;
-    case "APT":
-      return `BM-APT-${yearSuffix()}-${p}`;
-    case "RPT":
-      return `BM-RPT-${yearSuffix()}-${p}`;
-    default:
-      return `BM-${kind}-${yearSuffix()}-${p}`;
+  if (YEAR_BASED.has(kind)) {
+    return `BM-${kind}-${yearSuffix()}-${p}`;
   }
+  return `BM-${kind}-${p}`;
 }
 
 /** year-tagged ID used for quality leads, cases, tasks, tickets and appointments. */
-export function buildYearId(kind: "QL" | "CASE" | "TSK" | "TKT" | "APT" | "RPT", seq?: number): string {
+export function buildYearId(
+  kind: "QL" | "CASE" | "TSK" | "TKT" | "APT" | "RPT",
+  seq?: number
+): string {
   return `BM-${kind}-${yearSuffix()}-${pad(seq ?? Math.floor(Math.random() * 999999) + 1)}`;
 }
 
@@ -71,4 +77,32 @@ export function buildSecureId(kind: IdKind, seq?: number): string {
 /** Create a unique reference for tokens such as file uploads. */
 export function buildToken(): string {
   return `${Date.now().toString(36)}${randomSegment()}${randomSegment()}`;
+}
+
+/**
+ * Atomically allocate the next system ID via idSequences (design §27).
+ * IDs are server-generated and immutable.
+ */
+export async function nextId(kind: IdKind): Promise<string> {
+  await connectToDatabase();
+  const yearBased = YEAR_BASED.has(kind);
+  const year = yearBased ? new Date().getFullYear() : undefined;
+  const key = yearBased ? `${kind}-${year}` : kind;
+  const prefix = prefixFor(kind);
+
+  const doc = await IdSequence.findOneAndUpdate(
+    { key },
+    {
+      $inc: { currentNumber: 1 },
+      $setOnInsert: { prefix, yearBased, year },
+      $set: { updatedAt: new Date() },
+    },
+    { upsert: true, new: true }
+  ).lean();
+
+  const n = doc?.currentNumber ?? 1;
+  if (yearBased) {
+    return `${prefix}-${year}-${pad(n)}`;
+  }
+  return `${prefix}-${pad(n)}`;
 }

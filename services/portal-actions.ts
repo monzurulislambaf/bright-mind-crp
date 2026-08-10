@@ -8,7 +8,7 @@ import { Psychologist } from "@/models/Psychologist";
 import { Solicitor } from "@/models/Solicitor";
 import { IndividualClient } from "@/models/IndividualClient";
 import { connectToDatabase } from "@/lib/db";
-import { buildYearId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
 
@@ -140,9 +140,8 @@ export async function createInstruction(
     return { ok: false, message: "Please check the form.", errors: parsed.error.flatten().fieldErrors };
   }
 
-  const seq = (await Case.countDocuments().lean()) + 1;
   const caze = await Case.create({
-    caseId: buildYearId("CASE", seq),
+    caseId: await nextId("CASE"),
     instructingParty: parsed.data.instructingParty || parsed.data.clientName,
     organisation: s.organisationId ? new mongoose.Types.ObjectId(s.organisationId) : undefined,
     solicitor: new mongoose.Types.ObjectId(s.personId),
@@ -178,9 +177,8 @@ export async function submitServiceRequest(
   const notes = String(formData.get("notes") ?? "").trim();
   if (!serviceType) return { ok: false, message: "Service type is required." };
 
-  const seq = (await Case.countDocuments().lean()) + 1;
   await Case.create({
-    caseId: buildYearId("CASE", seq),
+    caseId: await nextId("CASE"),
     client: new mongoose.Types.ObjectId(String(c._id)),
     instructingParty: `${c.firstName} ${c.lastName}`.trim(),
     serviceType,

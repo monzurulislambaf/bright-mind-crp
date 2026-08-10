@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
 import { Appointment, APPOINTMENT_STATUS, APPOINTMENT_TYPE } from "@/models/Appointment";
 import { connectToDatabase } from "@/lib/db";
-import { buildYearId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -38,9 +38,8 @@ export async function createAppointment(
   if (!APPOINTMENT_STATUS.includes(status)) return { ok: false, message: "Invalid status." };
 
   await connectToDatabase();
-  const seq = (await Appointment.countDocuments().lean()) + 1;
   const appointment = await Appointment.create({
-    appointmentId: buildYearId("APT", seq),
+    appointmentId: await nextId("APT"),
     kind,
     status,
     title,

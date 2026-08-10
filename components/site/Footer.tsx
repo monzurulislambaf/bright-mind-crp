@@ -47,18 +47,18 @@ export function Footer() {
           ))}
         </nav>
 
-        <nav aria-label="Professionals">
-          <h6 className="footer-title opacity-70">Professionals</h6>
-          {footerNav.professionals.map((link) => (
+        <nav aria-label="Services">
+          <h6 className="footer-title opacity-70">Services</h6>
+          {footerNav.services.map((link) => (
             <Link key={link.href} href={link.href} className="link link-hover">
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <nav aria-label="Individuals">
-          <h6 className="footer-title opacity-70">Individuals</h6>
-          {footerNav.individuals.map((link) => (
+        <nav aria-label="Professionals">
+          <h6 className="footer-title opacity-70">Professionals</h6>
+          {footerNav.professionals.map((link) => (
             <Link key={link.href} href={link.href} className="link link-hover">
               {link.label}
             </Link>

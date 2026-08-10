@@ -2,28 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { requireAuth } from "@/lib/auth/dal";
-import { hasPermission, permissionsForRole } from "@/lib/auth/permissions";
+import { hasPermission } from "@/lib/auth/permissions";
 import type { Permission } from "@/lib/auth/permissions";
 import { ROLE_LABELS } from "@/lib/auth/roles";
 import { logout } from "@/lib/auth/actions";
+import { CRM_NAV, navItemAllowed, type CrmNavItem } from "@/lib/crm/nav";
 
 export const metadata: Metadata = { title: "CRM" };
-
-const NAV: Array<{ href: string; label: string; perm?: Permission }> = [
-  { href: "/crm", label: "Dashboard" },
-  { href: "/crm/leads", label: "Leads", perm: "leads:read" },
-  { href: "/crm/pipeline", label: "Pipeline", perm: "leads:read" },
-  { href: "/crm/import", label: "Import Leads", perm: "leads:import" },
-  { href: "/crm/onboarding", label: "Onboarding", perm: "leads:update" },
-  { href: "/crm/cases", label: "Cases", perm: "cases:read" },
-  { href: "/crm/reports", label: "Reports", perm: "reports:read" },
-  { href: "/crm/tasks", label: "Tasks", perm: "tasks:read" },
-  { href: "/crm/tickets", label: "Tickets", perm: "tickets:read" },
-  { href: "/crm/appointments", label: "Appointments", perm: "appointments:read" },
-  { href: "/crm/psychologists", label: "Psychologists", perm: "processors:review" },
-  { href: "/crm/notifications", label: "Notifications", perm: "audit:read" },
-  { href: "/crm/search", label: "Search", perm: "cases:read" },
-];
 
 export default async function CrmLayout({
   children,
@@ -31,16 +16,21 @@ export default async function CrmLayout({
   children: React.ReactNode;
 }) {
   const user = await requireAuth();
-  const perms = permissionsForRole(user.role);
+  const has = (p: Permission): boolean => hasPermission(user.role, p);
 
-const canAccessCrm =
-  perms.includes("leads:read") || perms.includes("leads:create") || perms.includes("leads:import");
+  const canAccessCrm =
+    has("leads:read") || has("leads:create") || has("leads:import");
 
   if (!canAccessCrm) {
     redirect("/dashboard");
   }
 
-  const nav = NAV.filter((item) => !item.perm || hasPermission(user.role, item.perm));
+  const sections = CRM_NAV.map((section) => ({
+    ...section,
+    items: section.items.filter((item: CrmNavItem) =>
+      navItemAllowed(item, has)
+    ),
+  })).filter((section) => section.items.length > 0);
 
   return (
     <div className="drawer lg:drawer-open">
@@ -74,16 +64,22 @@ const canAccessCrm =
       <div className="drawer-side">
         <label htmlFor="crm-drawer" aria-label="close sidebar" className="drawer-overlay" />
         <div className="menu min-h-full w-72 gap-1 bg-base-200 p-4">
-          <span className="menu-title">Sales & CRM</span>
-          {nav.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href}>{item.label}</Link>
-            </li>
+          {sections.map((section) => (
+            <div key={section.title}>
+              <span className="menu-title">{section.title}</span>
+              {section.items.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href}>{item.label}</Link>
+                </li>
+              ))}
+            </div>
           ))}
-          <span className="menu-title mt-6">Tools</span>
-          <li>
-            <Link href="/dashboard">Back to Dashboard</Link>
-          </li>
+          <div className="mt-6">
+            <span className="menu-title">Navigate</span>
+            <li>
+              <Link href="/dashboard">Back to Dashboard</Link>
+            </li>
+          </div>
         </div>
       </div>
     </div>

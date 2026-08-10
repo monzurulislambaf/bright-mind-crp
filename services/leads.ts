@@ -4,7 +4,7 @@ import { z } from "zod";
 import { Lead } from "@/models/Lead";
 import { FormSubmission } from "@/models/FormSubmission";
 import { connectToDatabase } from "@/lib/db";
-import { buildId, buildSecureId } from "@/lib/ids";
+import { nextId, buildSecureId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { headers } from "next/headers";
 
@@ -109,11 +109,11 @@ export async function createLeadFromForm(
 
   try {
     await connectToDatabase();
-    const seq = (await Lead.countDocuments().lean()) + 1;
     const composedNotes = composeNotes(parsed.data);
+    const leadId = await nextId("LEAD");
 
     const lead = await Lead.create({
-      leadId: buildId("LEAD", seq),
+      leadId,
       source,
       campaign,
       landingPage,
@@ -129,7 +129,7 @@ export async function createLeadFromForm(
     });
 
     await FormSubmission.create({
-      formId: buildSecureId("CON", seq),
+      formId: buildSecureId("CON"),
       formType,
       source,
       campaign,

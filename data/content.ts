@@ -1,51 +1,252 @@
 export const homeContent = {
   hero: {
     eyebrow: "Independent · Court-Compliant · Secure",
-    heading: "Independent Psychological & Country Expert Reporting",
+    heading:
+      "Asylum psychological reports, country expert evidence, and remote counselling worldwide",
     description:
-      "Bright Mind Psychology Care and Reporting provides independent, court-compliant psychological and country expert services to solicitors, barristers, and legal professionals across a wide range of practice areas.",
+      "Bright Mind Psychology is a specialist service for solicitors, asylum seekers, and private clients who need immigration psychological assessments, country expert reports, and qualified remote counselling.",
     supporting:
       "We work with legal teams handling Immigration, Family Law, Criminal Law, Personal Injury, Employment Tribunal, and Clinical Negligence matters — delivering evidence that meets the standards required by courts, tribunals, and government bodies.",
   },
+  stats: [
+    { value: "15+", label: "country jurisdictions covered" },
+    { value: "5", label: "core service lines" },
+    { value: "Worldwide", label: "remote instruction and counselling delivery" },
+    { value: "UK-led", label: "reporting model shaped for UK legal scrutiny" },
+  ],
   whyInstruct: [
     {
-      title: "Independent & Court-Compliant",
-      text: "Reports prepared to the evidentiary standards required by the relevant court or tribunal.",
+      title: "Legal relevance without advocacy",
+      text: "Objective clinical and country evidence for legal scrutiny — not case advocacy.",
     },
     {
-      title: "Specialist Expertise",
-      text: "Registered psychologists and country experts across a wide range of jurisdictions and practice areas.",
+      title: "Remote delivery built in",
+      text: "Secure video assessment, interpreter-friendly workflows, and cross-border delivery.",
     },
     {
-      title: "Trusted by Legal Professionals",
-      text: "Working alongside solicitors, barristers, and law firms nationwide.",
+      title: "Specialist expertise",
+      text: "Registered psychologists and country experts across key jurisdictions and practice areas.",
     },
     {
-      title: "Timely & Reliable",
-      text: "Clear timelines, transparent process, and responsive communication throughout.",
+      title: "Integrated intake and portal",
+      text: "Enquiry capture, secure portal access, and case handling as one system.",
     },
   ],
   audiences: [
     {
-      title: "Solicitor Firms",
-      text: "Instruct expert reports and manage cases securely.",
+      title: "Solicitors and barristers",
+      text: "Instruction-ready asylum psychological reports, country evidence, and secure digital delivery.",
       href: "/for-solicitors",
       cta: "For Solicitors",
     },
     {
-      title: "HCPC-Registered Psychologists",
-      text: "Join our expert panel.",
+      title: "HCPC-registered psychologists",
+      text: "Join our expert panel for secure allocation, review, and collaboration.",
       href: "/for-psychologists",
       cta: "For Psychologists",
     },
     {
-      title: "Individual Clients",
-      text: "Access assessments, certificates, and counselling support directly.",
+      title: "Asylum seekers and private clients",
+      text: "Independent assessments and counselling pathways that prioritise dignity and access.",
       href: "/for-individuals",
       cta: "For Individuals",
     },
   ],
 } as const;
+
+export const reportingContent = {
+  heading:
+    "Independent asylum psychological reports and immigration psychological assessments in the UK",
+  intro:
+    "Evidence-led reporting for vulnerable clients and legally significant questions — structured for UK tribunal, Home Office, and court scrutiny.",
+  useCases: [
+    "Immigration and asylum matters",
+    "Family law proceedings",
+    "Criminal law proceedings",
+    "Personal injury cases",
+    "Employment tribunal matters",
+    "Clinical negligence and institutional matters",
+  ],
+  reasons: [
+    {
+      title: "Asylum and immigration appeals",
+      summary:
+        "Where trauma, memory, vulnerability, fear on return, or mental health impact are relevant to how the case should be understood.",
+    },
+    {
+      title: "Fitness to engage and procedural fairness",
+      summary:
+        "Where psychological symptoms may affect a person’s ability to recall events, engage consistently, or participate safely in proceedings.",
+    },
+    {
+      title: "Country and clinical context together",
+      summary:
+        "Where the tribunal or legal team needs both an expert psychological view and a professionally reasoned understanding of conditions in the country of return.",
+    },
+  ],
+  workflow: [
+    {
+      phase: "Instruction and triage",
+      summary:
+        "Confirm the legal question, deadlines, supporting records, and whether a psychological report, certificate, or country report is the right output.",
+    },
+    {
+      phase: "Assessment and evidence review",
+      summary:
+        "Carry out clinical interview, psychometrics where appropriate, and a structured review of relevant documents and background materials.",
+    },
+    {
+      phase: "Drafting and quality review",
+      summary:
+        "Prepare a cautious, evidence-led report that states findings, limitations, and reasoning clearly enough for scrutiny.",
+    },
+    {
+      phase: "Secure release",
+      summary:
+        "Deliver the final authorised output digitally through controlled portal-based release.",
+    },
+  ],
+  standards: [
+    "Independent conclusions rather than advocacy-led wording.",
+    "Clinical interview, behavioural observation, and psychometrics where relevant.",
+    "Clear reasoning tied back to the actual legal or institutional question.",
+    "Secure digital delivery with audited release controls.",
+  ],
+} as const;
+
+export const countryReportsContent = {
+  heading:
+    "Country expert reports for asylum proceedings, return-risk questions, and mental-health landscape evidence",
+  intro:
+    "Professionally prepared country expert analysis for legal teams who need more than generic background research — focused on mental-health systems, return risk, and country conditions.",
+  themes: [
+    {
+      title: "Mental health systems and access to treatment",
+      summary:
+        "Useful where return risk depends on whether a person can realistically access treatment, medication, specialist care, or safe continuity of support.",
+    },
+    {
+      title: "Social attitudes, stigma, and vulnerability",
+      summary:
+        "Relevant where a claimant’s mental health, trauma history, minority identity, or social profile could increase exposure to harm on return.",
+    },
+    {
+      title: "Political, social, and human-rights conditions",
+      summary:
+        "Useful where wider country conditions shape persecution risk, state protection, relocation, or the lived reality behind a claim.",
+    },
+  ],
+  reasons: [
+    "Generic internet research rarely carries the same weight as a professionally prepared country expert report.",
+    "Tribunals and legal teams often need focused analysis of a claimant’s specific country, region, social group, and return risks.",
+    "A tailored country report can complement a psychological report when the case turns on both mental health impact and country conditions.",
+  ],
+} as const;
+
+export const counsellingContent = {
+  heading: "Remote counselling delivered worldwide by qualified professionals",
+  intro:
+    "Trauma-informed remote counselling for clients navigating displacement, modern slavery, and wider psycho-social needs — kept distinct from forensic reporting pathways.",
+  pillars: [
+    {
+      title: "Trauma-informed care",
+      summary:
+        "Support for trauma, displacement, modern slavery, and psycho-social strain in a format that is practical for clients living across borders.",
+    },
+    {
+      title: "Worldwide access",
+      summary:
+        "Remote-first counselling pathways make it possible to support clients internationally while keeping the service operationally lean.",
+    },
+    {
+      title: "Qualified professionals",
+      summary:
+        "Delivery is designed around certified and professionally accountable clinicians rather than a generic coaching model.",
+    },
+    {
+      title: "Extendable pathway",
+      summary:
+        "The service can grow into therapist matching, appointment booking, notes permissions, and secure follow-up workflows.",
+    },
+  ],
+  whoHelps: [
+    "Asylum seekers and displaced clients navigating uncertainty.",
+    "Clients affected by trauma, exploitation, or prolonged stress.",
+    "Individuals needing remote access to a qualified professional network.",
+    "Referring organisations that want a counselling route alongside reporting.",
+  ],
+} as const;
+
+export const insightsContent = {
+  heading: "Specialist content built for how solicitors and clients search",
+  intro:
+    "A knowledge layer covering asylum psychological reports, immigration assessments, country expert evidence, remote counselling, and secure legal workflows.",
+  cards: [
+    {
+      title: "When a psychological report may help an asylum case",
+      summary:
+        "Explains when legal teams seek evidence on trauma, memory, vulnerability, and mental health impact in immigration and asylum proceedings.",
+      href: "/reporting",
+    },
+    {
+      title: "How remote immigration psychological assessments work",
+      summary:
+        "Covers secure video assessment, interpreters, preparation, and what solicitors and clients should expect before instruction.",
+      href: "/contact",
+    },
+    {
+      title: "What to include in a letter of instruction",
+      summary:
+        "Highlights the key information Bright Mind needs to triage a report request efficiently and route it into the right workflow.",
+      href: "/for-solicitors",
+    },
+    {
+      title: "When a country expert report is worth commissioning",
+      summary:
+        "Explains the difference between generic background research and expert country analysis prepared for legal scrutiny.",
+      href: "/country-reports",
+    },
+    {
+      title: "Counselling after trauma, displacement, and uncertainty",
+      summary:
+        "Shows how the counselling pathway can sit alongside reporting without confusing forensic evidence with therapeutic support.",
+      href: "/counselling",
+    },
+    {
+      title: "Why secure communication matters in vulnerable-client work",
+      summary:
+        "Connects website intake, CRM triage, document permissions, and release controls inside the Bright Mind platform.",
+      href: "/how-it-works",
+    },
+  ],
+} as const;
+
+export const professionalTracks = [
+  {
+    title: "Consultant Psychologists",
+    credential: "Independent assessment and expert reporting",
+    summary:
+      "Professionals focused on psychological formulation, psychometrics, behavioural observation, and tribunal-ready written evidence.",
+  },
+  {
+    title: "Counsellors and Psychotherapists",
+    credential: "Remote care and ongoing therapeutic support",
+    summary:
+      "Practitioners delivering counselling for trauma, adjustment strain, and wider psycho-social difficulties.",
+  },
+  {
+    title: "Country Experts",
+    credential: "Mental-health landscape and contextual risk evidence",
+    summary:
+      "Specialists who can explain access to treatment, stigma, social pressures, and country-specific risks relevant to a case.",
+  },
+  {
+    title: "Quality Review and Case Support",
+    credential: "Structured release and professional oversight",
+    summary:
+      "An operational layer for secure case handling, document release, review cycles, and collaboration with instructing parties.",
+  },
+] as const;
 
 export const aboutContent = {
   heading: "Independent Expertise. Clinical Rigour. Court-Ready Evidence.",
@@ -122,10 +323,16 @@ export const solicitorContent = {
     },
   ],
   why: [
-    "Registered, vetted experts across a wide range of practice areas and jurisdictions",
-    "Transparent timelines and case tracking",
-    "Secure, permission-based document handling",
-    "Responsive support throughout the life of the case",
+    "Independent psychological reports for asylum, immigration, family, personal injury, and related proceedings",
+    "Clear explanation of mental health presentation, trauma impact, vulnerability, and functional consequences where relevant",
+    "Remote assessment model that works with interpreters, client safeguarding considerations, and urgent legal deadlines",
+    "Secure digital communication, document exchange, and release pathway through the Bright Mind portal",
+  ],
+  instructionChecklist: [
+    "Letter of instruction and the legal questions the report must address.",
+    "Hearing date, tribunal deadline, or other case-critical timeframe.",
+    "Relevant records already available, including witness statements, refusal letters, medical notes, or previous reports.",
+    "Interpreter needs, safeguarding considerations, and whether the client can be assessed remotely.",
   ],
 } as const;
 

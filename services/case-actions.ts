@@ -7,7 +7,7 @@ import { Case, CASE_STATUS } from "@/models/Case";
 import type { CaseStatus } from "@/models/Case";
 import { Psychologist } from "@/models/Psychologist";
 import { connectToDatabase } from "@/lib/db";
-import { buildYearId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -58,9 +58,8 @@ export async function createCase(
   const toObjId = (v: string) => (mongoose.Types.ObjectId.isValid(v) ? new mongoose.Types.ObjectId(v) : undefined);
 
   await connectToDatabase();
-  const seq = (await Case.countDocuments().lean()) + 1;
   const caze = await Case.create({
-    caseId: buildYearId("CASE", seq),
+    caseId: await nextId("CASE"),
     instructingParty: parsed.data.instructingParty,
     organisation: toObjId(parsed.data.organisation),
     solicitor: toObjId(parsed.data.solicitor),

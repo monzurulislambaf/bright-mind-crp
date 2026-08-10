@@ -8,7 +8,7 @@ import { IndividualClient } from "@/models/IndividualClient";
 import { connectToDatabase } from "@/lib/db";
 import { createSession, deleteSession } from "@/lib/auth/session";
 import { getAuth } from "@/lib/auth/dal";
-import { buildId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 import { type Role } from "@/lib/auth/roles";
 import { writeAuditLog } from "@/services/audit";
 
@@ -47,7 +47,7 @@ export async function register(
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const userId = buildId("USR", (await User.countDocuments().lean()) + 1);
+  const userId = await nextId("USR");
 
   const user = await User.create({
     userId,
@@ -56,10 +56,12 @@ export async function register(
     email,
     passwordHash,
     role: "INDIVIDUAL_CLIENT" as Role,
+    userType: "CLIENT",
+    status: "active",
   });
 
   await IndividualClient.create({
-    clientId: buildId("CLI", (await User.countDocuments().lean()) + 1),
+    clientId: await nextId("CLI"),
     userId: user._id,
     firstName,
     lastName,
@@ -69,10 +71,12 @@ export async function register(
 
   await writeAuditLog({
     actor: user.userId,
-    action: "auth.register",
+    actorUserId: user._id.toString(),
+    action: "CREATE",
     resource: "user",
+    resourceType: "USER",
     resourceId: user.userId,
-    metadata: { email },
+    metadata: { email, event: "auth.register" },
   });
 
   await createSession(user._id.toString(), "INDIVIDUAL_CLIENT");
@@ -101,10 +105,14 @@ export async function login(
     return { message: "Invalid email or password." };
   }
 
+  await User.updateOne({ _id: user._id }, { $set: { lastLoginAt: new Date() } });
+
   await writeAuditLog({
     actor: user.userId,
-    action: "auth.login",
+    actorUserId: user._id.toString(),
+    action: "LOGIN",
     resource: "user",
+    resourceType: "USER",
     resourceId: user.userId,
   });
 
@@ -117,8 +125,10 @@ export async function logout(): Promise<void> {
   if (auth) {
     await writeAuditLog({
       actor: auth.user.id,
-      action: "auth.logout",
+      actorUserId: auth.user.id,
+      action: "LOGOUT",
       resource: "user",
+      resourceType: "USER",
     });
   }
   await deleteSession();

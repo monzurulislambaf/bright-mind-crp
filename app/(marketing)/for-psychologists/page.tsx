@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import {
   CalendarDaysIcon,
   ComputerDesktopIcon,
   ClipboardDocumentListIcon,
   ScaleIcon,
 } from "@heroicons/react/24/outline";
-import { psychologistContent } from "@/data/content";
+import { psychologistContent, professionalTracks } from "@/data/content";
 import { PageHero } from "@/components/site/PageHero";
 import { ProcessTimeline } from "@/components/site/ProcessTimeline";
 import { SectionHeading } from "@/components/site/SectionHeading";
@@ -47,6 +48,48 @@ export default function ForPsychologistsPage() {
       />
 
       <section className="section-pad">
+        <div className="container-page grid items-center gap-10 lg:grid-cols-2">
+          <FadeIn>
+            <div className="overflow-hidden rounded-box border border-base-300 bg-base-200">
+              <Image
+                alt="Bright Mind professional network of psychologists and experts"
+                className="h-auto w-full object-cover"
+                height={900}
+                src="/brightmind-professionals.png"
+                width={1200}
+              />
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.08}>
+            <SectionHeading
+              eyebrow="Professional tracks"
+              title="A network built for reporting, counselling, and country expertise"
+              subtitle="Join as a consultant psychologist, counsellor, country expert, or quality-review collaborator."
+            />
+          </FadeIn>
+        </div>
+        <div className="container-page mt-10">
+          <Stagger className="grid gap-5 md:grid-cols-2">
+            {professionalTracks.map((track) => (
+              <StaggerItem key={track.title}>
+                <article className="surface-card h-full">
+                  <div className="card-body gap-2">
+                    <h3 className="font-display text-lg font-semibold text-primary">
+                      {track.title}
+                    </h3>
+                    <p className="text-sm font-medium text-accent">
+                      {track.credential}
+                    </p>
+                    <p className="text-base-content/70">{track.summary}</p>
+                  </div>
+                </article>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
+      <section className="section-pad border-y border-base-300 bg-base-200/40">
         <div className="container-page">
           <FadeIn>
             <SectionHeading eyebrow="Benefits" title="Why join our network" />
@@ -74,7 +117,7 @@ export default function ForPsychologistsPage() {
         </div>
       </section>
 
-      <section className="section-pad border-y border-base-300 bg-base-200/40">
+      <section className="section-pad">
         <div className="container-page grid gap-12 lg:grid-cols-2 lg:items-start">
           <FadeIn>
             <SectionHeading

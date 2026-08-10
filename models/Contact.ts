@@ -12,14 +12,38 @@ const ContactSchema = new Schema(
     firstName: { type: String, trim: true },
     lastName: { type: String, trim: true },
     email: { type: String, trim: true, lowercase: true },
+    telephone: { type: String, trim: true },
     phone: { type: String, trim: true },
     jobTitle: { type: String, trim: true },
+    contactType: {
+      type: String,
+      enum: ["PROFESSIONAL", "INDIVIDUAL", "OTHER"],
+      default: "PROFESSIONAL",
+    },
+    preferredContactMethod: {
+      type: String,
+      enum: ["EMAIL", "PHONE", "WHATSAPP", "POST"],
+      default: "EMAIL",
+    },
+    address: {
+      line1: String,
+      line2: String,
+      city: String,
+      postcode: String,
+      country: { type: String, default: "UK" },
+    },
+    marketing: {
+      optedIn: { type: Boolean, default: false },
+      doNotContact: { type: Boolean, default: false },
+    },
   },
   { timestamps: true }
 );
 
 ContactSchema.index({ email: 1 });
 ContactSchema.index({ organisation: 1 });
+ContactSchema.index({ telephone: 1 });
+ContactSchema.index({ phone: 1 });
 
 export type ContactDoc = InferSchemaType<typeof ContactSchema> & {
   _id: mongoose.Types.ObjectId;

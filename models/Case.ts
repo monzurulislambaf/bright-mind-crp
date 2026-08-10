@@ -10,7 +10,11 @@ export type { CaseStatus, OfferStatus } from "@/lib/cases/statuses";
 
 const OfferSchema = new Schema(
   {
-    psychologist: { type: Schema.Types.ObjectId, ref: "Psychologist", required: true },
+    psychologist: {
+      type: Schema.Types.ObjectId,
+      ref: "Psychologist",
+      required: true,
+    },
     status: { type: String, enum: OFFER_STATUS, default: "Offered" },
     conflict: { type: Boolean, default: false },
     expiresAt: { type: Date },
@@ -22,17 +26,32 @@ const OfferSchema = new Schema(
 const CaseSchema = new Schema(
   {
     caseId: { type: String, required: true, unique: true },
+    caseType: { type: String, trim: true, default: "PSYCHOLOGICAL_REPORT" },
     client: { type: Schema.Types.ObjectId, ref: "IndividualClient" },
     instructingParty: { type: String },
     organisation: { type: Schema.Types.ObjectId, ref: "Organisation" },
+    instructingOrganisation: {
+      type: Schema.Types.ObjectId,
+      ref: "Organisation",
+    },
     solicitor: { type: Schema.Types.ObjectId, ref: "Solicitor" },
+    lead: { type: Schema.Types.ObjectId, ref: "Lead" },
     serviceType: { type: String, trim: true },
     reportType: { type: String, trim: true },
     deadline: { type: Date },
     status: { type: String, enum: CASE_STATUS, default: "New Instruction" },
+    priority: {
+      type: String,
+      enum: ["LOW", "MEDIUM", "HIGH", "URGENT"],
+      default: "MEDIUM",
+    },
     caseworker: { type: Schema.Types.ObjectId, ref: "User" },
     reviewer: { type: Schema.Types.ObjectId, ref: "User" },
-    assignedPsychologist: { type: Schema.Types.ObjectId, ref: "Psychologist" },
+    assignedPsychologist: {
+      type: Schema.Types.ObjectId,
+      ref: "Psychologist",
+    },
+    quotation: { type: Schema.Types.ObjectId, ref: "Quotation" },
     offers: { type: [OfferSchema], default: [] },
     internalNotes: { type: String },
   },
@@ -43,7 +62,9 @@ CaseSchema.index({ status: 1 });
 CaseSchema.index({ organisation: 1 });
 CaseSchema.index({ client: 1 });
 CaseSchema.index({ assignedPsychologist: 1 });
+CaseSchema.index({ caseworker: 1 });
 CaseSchema.index({ deadline: 1 });
+CaseSchema.index({ lead: 1 });
 
 export type CaseDoc = InferSchemaType<typeof CaseSchema> & {
   _id: mongoose.Types.ObjectId;

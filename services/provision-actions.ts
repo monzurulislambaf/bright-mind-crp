@@ -10,7 +10,7 @@ import { Psychologist } from "@/models/Psychologist";
 import { IndividualClient } from "@/models/IndividualClient";
 import { User } from "@/models/User";
 import { connectToDatabase } from "@/lib/db";
-import { buildId, buildToken } from "@/lib/ids";
+import { nextId, buildToken } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -81,7 +81,7 @@ export async function provisionAccount(
 
   const password = buildToken();
   const passwordHash = await bcrypt.hash(password, 10);
-  const userId = buildId("USR", (await User.countDocuments().lean()) + 1);
+  const userId = await nextId("USR");
 
   const role = ROLE_BY_KIND[qualified.kind] ?? "INDIVIDUAL_CLIENT";
   const firstName = person.firstName ?? lead?.firstName ?? "";
@@ -90,6 +90,15 @@ export async function provisionAccount(
     ? new mongoose.Types.ObjectId(String(person.organisation))
     : undefined;
 
+  const userType =
+    role === "PSYCHOLOGIST"
+      ? "PSYCHOLOGIST"
+      : role === "INDIVIDUAL_CLIENT"
+        ? "CLIENT"
+        : role === "SOLICITOR" || role === "SOLICITOR_FIRM_ADMIN"
+          ? "PARTNER"
+          : "EMPLOYEE";
+
   const created = await User.create({
     userId,
     firstName: firstName || "Pending",
@@ -97,6 +106,7 @@ export async function provisionAccount(
     email,
     passwordHash,
     role,
+    userType,
     organisation,
     status: "active",
   });

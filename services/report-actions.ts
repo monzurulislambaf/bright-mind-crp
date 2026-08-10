@@ -6,7 +6,7 @@ import { Report } from "@/models/Report";
 import { Case } from "@/models/Case";
 import { Psychologist } from "@/models/Psychologist";
 import { connectToDatabase } from "@/lib/db";
-import { buildYearId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -45,9 +45,8 @@ export async function createReport(
     }
   }
 
-  const seq = (await Report.countDocuments().lean()) + 1;
   const report = await Report.create({
-    reportId: buildYearId("RPT", seq),
+    reportId: await nextId("RPT"),
     case: new mongoose.Types.ObjectId(caseRaw),
     title,
     body,

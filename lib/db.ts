@@ -16,9 +16,14 @@ export async function connectToDatabase() {
     return global._mongooseConnection;
   }
 
-  const connection = mongoose.connect(MONGODB_URI, {
-    bufferCommands: false,
-  });
+  const connection = mongoose
+    .connect(MONGODB_URI, {
+      bufferCommands: false,
+    })
+    .catch((err) => {
+      global._mongooseConnection = undefined;
+      throw err;
+    });
 
   global._mongooseConnection = connection;
   return connection;

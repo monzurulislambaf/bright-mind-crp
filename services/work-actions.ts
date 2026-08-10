@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { Task, TASK_STATUS, TASK_PRIORITY } from "@/models/Task";
 import { Ticket, TICKET_STATUS, TICKET_PRIORITY, TICKET_CATEGORY } from "@/models/Ticket";
 import { connectToDatabase } from "@/lib/db";
-import { buildYearId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -41,9 +41,8 @@ export async function createTask(
   if (!TASK_STATUS.includes(status)) return { ok: false, message: "Invalid status." };
 
   await connectToDatabase();
-  const seq = (await Task.countDocuments().lean()) + 1;
   const task = await Task.create({
-    taskId: buildYearId("TSK", seq),
+    taskId: await nextId("TSK"),
     title,
     priority,
     status,
@@ -117,9 +116,8 @@ export async function createTicket(
   if (!TICKET_PRIORITY.includes(priority)) return { ok: false, message: "Invalid priority." };
 
   await connectToDatabase();
-  const seq = (await Ticket.countDocuments().lean()) + 1;
   const ticket = await Ticket.create({
-    ticketId: buildYearId("TKT", seq),
+    ticketId: await nextId("TKT"),
     subject,
     category,
     priority,

@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { Document } from "@/models/Document";
 import { Case } from "@/models/Case";
 import { connectToDatabase } from "@/lib/db";
-import { buildId } from "@/lib/ids";
+import { nextId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -44,7 +44,6 @@ export async function uploadCaseDocument(
   const caze = await Case.findById(caseId).lean();
   if (!caze) return { ok: false, message: "Case not found." };
 
-  const seq = (await Document.countDocuments().lean()) + 1;
   const bytes = new Uint8Array(await file.arrayBuffer());
   const content = Buffer.from(bytes);
   const caseOid = new mongoose.Types.ObjectId(caseId);
@@ -60,20 +59,27 @@ export async function uploadCaseDocument(
       content,
       sizeBytes: file.size,
       mimeType: file.type || "application/octet-stream",
+      status: "REVISED",
       uploadedBy: new mongoose.Types.ObjectId(user.id),
     });
+    existing.currentVersion = nextVersion;
     if (category) existing.category = category;
     await existing.save();
     docRef = existing.title;
   } else {
     const created = await Document.create({
-      documentId: buildId("DOC", seq),
+      documentId: await nextId("DOC"),
       title,
       category: category || undefined,
       case: caseOid,
       owner: new mongoose.Types.ObjectId(user.id),
+      ownerUserId: new mongoose.Types.ObjectId(user.id),
+      uploadedBy: new mongoose.Types.ObjectId(user.id),
       access: "case",
+      visibilityLevel: "RESTRICTED",
+      status: "DRAFT",
       released: false,
+      currentVersion: 1,
       versions: [
         {
           version: 1,
@@ -81,6 +87,7 @@ export async function uploadCaseDocument(
           content,
           sizeBytes: file.size,
           mimeType: file.type || "application/octet-stream",
+          status: "DRAFT",
           uploadedBy: new mongoose.Types.ObjectId(user.id),
         },
       ],

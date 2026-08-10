@@ -23,9 +23,14 @@ export function ServiceCard({
               {service.number}
             </span>
           </div>
-          <h3 className="card-title font-display text-xl text-primary">
-            {service.title}
-          </h3>
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <h3 className="card-title font-display text-xl text-primary">
+              {service.title}
+            </h3>
+            <span className="badge badge-soft badge-primary badge-sm shrink-0">
+              {service.rate}
+            </span>
+          </div>
           <p className="text-base-content/70">{service.shortDescription}</p>
           <div className="card-actions mt-auto justify-start pt-2">
             <Link

@@ -4,14 +4,23 @@ Build a production-ready **Bright Mind Psychology Care and Reporting** platform 
 
 * Next.js App Router + TypeScript
 * MongoDB + Mongoose
-MONGODB_USERNAME="monzurulislam504_db_user"
-MONGODB_PASSWORD="I5d1CJ7w2veHlBmp"
-MONGODB_URI="mongodb+srv://monzurulislam504_db_user:I5d1CJ7w2veHlBmp@cluster0.sh8gtsp.mongodb.net"
 * Tailwind CSS + shadcn/ui
 * React Hook Form + Zod
 * Secure authentication + RBAC
 * Responsive desktop/tablet/mobile UI
 * Secure object storage for documents
+
+## Setup
+
+Copy `.env.example` to `.env.local` and fill in your own values. **Never** commit
+real credentials (MongoDB URIs, passwords, secrets) to this repository.
+
+## Maintenance scripts
+
+* `npm run create-admin` — bootstrap a MASTER_ADMIN account.
+* `node scripts/repair-id-sequences.cjs` — one-off repair if the `idsequences`
+  counters ever drift behind existing record IDs (safe to re-run; only moves
+  counters forward).
 
 ## 1. System
 

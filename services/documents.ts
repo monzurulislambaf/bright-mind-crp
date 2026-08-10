@@ -3,6 +3,7 @@ import { Document } from "@/models/Document";
 import { connectToDatabase } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
+import { toBuffer } from "@/lib/utils";
 
 export async function listDocumentsForCase(caseId: string) {
   const user = await requireAuth();
@@ -19,10 +20,12 @@ export async function getDocumentForDownload(caseId: string, documentId: string)
   if (!doc) return null;
   // Enforce release gating for released-report style documents only.
   const v = doc.versions?.[doc.versions.length - 1];
+  const content = toBuffer(v?.content);
+  if (!content) return null;
   return {
     title: doc.title,
     fileName: v?.fileName ?? doc.title,
     mimeType: v?.mimeType ?? "application/octet-stream",
-    content: v?.content,
+    content,
   };
 }

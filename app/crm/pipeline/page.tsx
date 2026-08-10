@@ -7,11 +7,14 @@ export const metadata: Metadata = { title: "Pipeline" };
 export const dynamic = "force-dynamic";
 
 export default async function PipelinePage() {
+  // Query all funnel stages in parallel to avoid N sequential round-trips.
+  const results = await Promise.all(
+    FUNNEL.map((stage) => listLeads({ status: stage, pageSize: 200 }))
+  );
   const byStage = new Map<string, Array<Record<string, unknown>>>();
-  for (const stage of FUNNEL) {
-    const { leads } = await listLeads({ status: stage, pageSize: 200 });
-    byStage.set(stage, leads as unknown as Record<string, unknown>[]);
-  }
+  FUNNEL.forEach((stage, i) => {
+    byStage.set(stage, results[i].leads as unknown as Record<string, unknown>[]);
+  });
 
   return (
     <div className="mx-auto w-full max-w-[1400px] px-4 py-8">

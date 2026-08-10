@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPortalPerson, getPortalCase } from "@/services/portal";
+import { requireAuth } from "@/lib/auth/dal";
+import {
+  getPortalPerson,
+  getPortalCase,
+  listPortalCaseDocuments,
+} from "@/services/portal";
 import { CASE_BADGE, OFFER_BADGE } from "@/lib/cases/statuses";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +16,7 @@ export default async function PortalCaseDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const person = await getPortalPerson();
+  const [user, person] = await Promise.all([requireAuth(), getPortalPerson()]);
   const result = await getPortalCase(id, person);
   if (!result) notFound();
 
@@ -100,6 +105,8 @@ export default async function PortalCaseDetailPage({
         </div>
       )}
 
+      <DocumentsSection id={id} person={person} user={user} />
+
       {caze.offers && caze.offers.length > 0 && (
         <div className="card card-body card-border mt-6 bg-base-100">
           <h2 className="text-lg font-semibold">Offers</h2>
@@ -116,6 +123,75 @@ export default async function PortalCaseDetailPage({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  client_upload: "Client upload",
+  report: "Report",
+  assessment: "Assessment",
+  correspondence: "Correspondence",
+  invoice: "Invoice",
+};
+
+function categoryLabel(category?: string | null): string {
+  if (!category) return "—";
+  return CATEGORY_LABELS[category] ?? category.replace(/_/g, " ");
+}
+
+async function DocumentsSection({
+  id,
+  person,
+  user,
+}: {
+  id: string;
+  person: { role: string; personId: string; name: string };
+  user: { id: string; role: string };
+}) {
+  const docs = await listPortalCaseDocuments(id, person, user);
+  if (docs.length === 0) return null;
+
+  return (
+    <div className="card card-body card-border mt-6 bg-base-100">
+      <h2 className="text-lg font-semibold">Documents</h2>
+      <div className="mt-2 overflow-x-auto">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Uploaded</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {docs.map((d) => (
+              <tr key={String(d._id)}>
+                <td className="font-medium">{d.title}</td>
+                <td className="text-sm">{categoryLabel(d.category)}</td>
+                <td className="text-sm">
+                  {d.createdAt
+                    ? new Date(d.createdAt).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "—"}
+                </td>
+                <td>
+                  <a
+                    href={`/portal/cases/${id}/documents/${String(d._id)}`}
+                    className="btn btn-ghost btn-xs"
+                  >
+                    Download
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import type { Permission } from "@/lib/auth/permissions";
 import { ROLE_LABELS } from "@/lib/auth/roles";
 import { logout } from "@/lib/auth/actions";
 import { CRM_NAV, navItemAllowed, type CrmNavItem } from "@/lib/crm/nav";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
 
 export const metadata: Metadata = { title: "CRM" };
 
@@ -49,7 +50,10 @@ export default async function CrmLayout({
             </Link>
           </div>
           <div className="navbar-end gap-2">
-            <span className="badge badge-soft badge-neutral">{ROLE_LABELS[user.role] ?? user.role}</span>
+            <ThemeToggle />
+            <span className="badge badge-soft badge-neutral hidden sm:inline-flex">
+              {ROLE_LABELS[user.role] ?? user.role}
+            </span>
             <form action={logout}>
               <button type="submit" className="btn btn-ghost btn-sm">
                 Logout

@@ -5,6 +5,7 @@ import { requireAuth } from "@/lib/auth/dal";
 import { ROLE_LABELS, type Role } from "@/lib/auth/roles";
 import { logout } from "@/lib/auth/actions";
 import { unreadNotificationCount } from "@/services/notifications";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
 
 export const metadata: Metadata = { title: "Portal" };
 
@@ -71,7 +72,10 @@ export default async function PortalLayout({
             </Link>
           </div>
           <div className="navbar-end gap-2">
-            <span className="badge badge-soft badge-neutral">{ROLE_LABELS[user.role] ?? user.role}</span>
+            <ThemeToggle />
+            <span className="badge badge-soft badge-neutral hidden sm:inline-flex">
+              {ROLE_LABELS[user.role] ?? user.role}
+            </span>
             <form action={logout}>
               <button type="submit" className="btn btn-ghost btn-sm">
                 Logout

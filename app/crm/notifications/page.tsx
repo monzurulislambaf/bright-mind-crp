@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { listNotificationsForAdmin } from "@/services/notifications";
+import { listNotificationsForAdmin, listUserEmails } from "@/services/notifications";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminNotificationsPage() {
   const notifications = await listNotificationsForAdmin(100);
+  const userLabels = await listUserEmails(notifications.map((n) => n.user));
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-8">
@@ -35,7 +36,7 @@ export default async function AdminNotificationsPage() {
               </span>
             </div>
             <p className="mt-1 text-sm text-base-content/70">
-              For user {String(n.user)} · type {n.type}
+              For {userLabels.get(String(n.user)) ?? String(n.user)} · type {n.type}
             </p>
             {n.body && <p className="mt-1 text-sm text-base-content/70">{n.body}</p>}
             {n.link && (

@@ -309,15 +309,11 @@ export function LeadForm({
           result.message ??
           "Thanks — we’ve received your details and will be in touch.",
       });
-      reset({
-        consent: false,
-        reportType: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        company: "",
-      });
+      // Clear every registered field so a second submission starts clean.
+      const cleared = Object.fromEntries(
+        fields.map((name) => [name, name === "consent" ? false : ""])
+      );
+      reset(cleared as Partial<FieldSchema>);
       return;
     }
 

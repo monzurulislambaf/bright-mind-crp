@@ -61,6 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en-GB"
       data-theme="bright"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${sourceSans.variable} ${sourceSerif.variable} h-full`}
     >

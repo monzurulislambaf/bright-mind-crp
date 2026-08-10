@@ -6,6 +6,7 @@ import { ROLE_LABELS, type Role } from "@/lib/auth/roles";
 import { hasPermission } from "@/lib/auth/permissions";
 import type { Permission } from "@/lib/auth/permissions";
 import { CRM_NAV, navItemAllowed, type CrmNavItem } from "@/lib/crm/nav";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +49,8 @@ export default async function DashboardPage() {
               Open CRM
             </Link>
           )}
-          <span className="badge badge-soft badge-primary">{label}</span>
+          <ThemeToggle />
+          <span className="badge badge-soft badge-primary hidden sm:inline-flex">{label}</span>
           <form action={logout}>
             <button type="submit" className="btn btn-ghost">
               Logout

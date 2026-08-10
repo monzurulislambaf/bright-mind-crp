@@ -6,9 +6,11 @@ import { Solicitor } from "@/models/Solicitor";
 import { IndividualClient } from "@/models/IndividualClient";
 import { User } from "@/models/User";
 import { Case } from "@/models/Case";
+import { Document } from "@/models/Document";
 import { connectToDatabase } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/dal";
 import { nextId } from "@/lib/ids";
+import { toBuffer } from "@/lib/utils";
 
 export type PortalPerson = {
   role: string;
@@ -155,6 +157,65 @@ export async function listAssignedCases(person: PortalPerson) {
       : {};
   await connectToDatabase();
   return Case.find(scope).sort({ updatedAt: -1 }).lean();
+}
+
+/**
+ * Lists documents visible to a portal user for a case they can access:
+ * documents they uploaded themselves, plus anything explicitly released.
+ * Internal drafts and other parties' files are never exposed.
+ */
+export async function listPortalCaseDocuments(
+  id: string,
+  person: PortalPerson,
+  user: { id: string; role: string }
+) {
+  const caze = await getPortalCase(id, person);
+  if (!caze) return [];
+
+  await connectToDatabase();
+  const docs = await Document.find({ case: id })
+    // List views never need the raw file bytes — avoid loading them.
+    .select("-versions.content")
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return docs.filter((d) => {
+    // Case access is already enforced; within a case, portal users see
+    // their own uploads plus documents the team has explicitly released.
+    const mine = d.ownerUserId && String(d.ownerUserId) === user.id;
+    return mine || d.released === true;
+  });
+}
+
+/**
+ * Returns the latest file content for a document the portal user may download:
+ * their own uploads, or released documents for professional roles.
+ */
+export async function getPortalDocumentForDownload(
+  caseId: string,
+  documentId: string,
+  person: PortalPerson,
+  user: { id: string; role: string }
+) {
+  // Reuse the visibility check (case access + own upload or released),
+  // then load the file bytes only for the target document.
+  const visible = await listPortalCaseDocuments(caseId, person, user);
+  if (!visible.some((d) => String(d._id) === documentId)) return null;
+
+  const doc = await Document.findOne({ _id: documentId, case: caseId })
+    .select("title versions.fileName versions.mimeType versions.content")
+    .lean();
+  if (!doc) return null;
+
+  const v = doc.versions?.[doc.versions.length - 1];
+  const content = toBuffer(v?.content);
+  if (!content) return null;
+  return {
+    title: doc.title,
+    fileName: v?.fileName ?? doc.title,
+    mimeType: v?.mimeType ?? "application/octet-stream",
+    content,
+  };
 }
 
 export async function getPortalCase(id: string, person: PortalPerson) {

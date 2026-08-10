@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * One-off admin account bootstrap (design §4, §28).
  *

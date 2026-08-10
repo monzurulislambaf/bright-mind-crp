@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import mongoose from "mongoose";
 import { Case } from "@/models/Case";
+import { Document } from "@/models/Document";
 import { Psychologist } from "@/models/Psychologist";
 import { Solicitor } from "@/models/Solicitor";
 import { IndividualClient } from "@/models/IndividualClient";
@@ -11,6 +12,11 @@ import { connectToDatabase } from "@/lib/db";
 import { nextId } from "@/lib/ids";
 import { writeAuditLog } from "@/services/audit";
 import { requireAuth } from "@/lib/auth/dal";
+import {
+  MAX_FILES,
+  MAX_FILE_BYTES,
+  ACCEPTED_MIME_TYPES,
+} from "@/lib/portal/constants";
 
 export type PortalActionState =
   | { ok: boolean; message?: string; errors?: Record<string, string[]> }
@@ -162,6 +168,59 @@ export async function createInstruction(
   return { ok: true, message: "Instruction created." };
 }
 
+function collectFiles(formData: FormData): File[] {
+  const raw = formData.getAll("files");
+  return raw.filter(
+    (entry): entry is File => entry instanceof File && entry.size > 0
+  );
+}
+
+/**
+ * Stores uploaded attachments against a case as private, owner-only documents.
+ * Never auto-grants visibility to other parties (design §16). All files have
+ * already been validated for count, size and type before this is called.
+ */
+async function storeAttachments(
+  caze: { _id: unknown },
+  files: File[],
+  userId: string
+): Promise<number> {
+  let stored = 0;
+  const caseOid = new mongoose.Types.ObjectId(String(caze._id));
+  const ownerOid = new mongoose.Types.ObjectId(userId);
+
+  for (const file of files) {
+    const bytes = Buffer.from(await file.arrayBuffer());
+    await Document.create({
+      documentId: await nextId("DOC"),
+      title: file.name,
+      category: "client_upload",
+      case: caseOid,
+      owner: ownerOid,
+      ownerUserId: ownerOid,
+      uploadedBy: ownerOid,
+      access: "owner",
+      visibilityLevel: "PRIVATE",
+      status: "DRAFT",
+      released: false,
+      currentVersion: 1,
+      versions: [
+        {
+          version: 1,
+          fileName: file.name,
+          content: bytes,
+          sizeBytes: file.size,
+          mimeType: file.type || "application/octet-stream",
+          status: "DRAFT",
+          uploadedBy: ownerOid,
+        },
+      ],
+    });
+    stored += 1;
+  }
+  return stored;
+}
+
 export async function submitServiceRequest(
   _prev: PortalActionState,
   formData: FormData
@@ -177,7 +236,26 @@ export async function submitServiceRequest(
   const notes = String(formData.get("notes") ?? "").trim();
   if (!serviceType) return { ok: false, message: "Service type is required." };
 
-  await Case.create({
+  const files = collectFiles(formData);
+  if (files.length > MAX_FILES) {
+    return { ok: false, message: `Please attach no more than ${MAX_FILES} files.` };
+  }
+  const oversized = files.filter((f) => f.size > MAX_FILE_BYTES);
+  if (oversized.length > 0) {
+    return {
+      ok: false,
+      message: `${oversized[0].name} exceeds the 8MB per-file limit.`,
+    };
+  }
+  const unsupported = files.filter((f) => !ACCEPTED_MIME_TYPES.includes(f.type));
+  if (unsupported.length > 0) {
+    return {
+      ok: false,
+      message: `${unsupported[0].name} is not a supported file type (PDF, Word, images, or text only).`,
+    };
+  }
+
+  const caze = await Case.create({
     caseId: await nextId("CASE"),
     client: new mongoose.Types.ObjectId(String(c._id)),
     instructingParty: `${c.firstName} ${c.lastName}`.trim(),
@@ -187,12 +265,22 @@ export async function submitServiceRequest(
     status: "New Instruction",
   });
 
+  const stored = await storeAttachments(caze, files, user.id);
+
   await writeAuditLog({
     actor: user.id,
     action: "case.created",
     resource: "case",
-    metadata: { via: "individual_request" },
+    resourceId: String(caze.caseId),
+    metadata: { via: "individual_request", attachments: stored },
   });
   revalidatePath("/portal/individual");
-  return { ok: true };
+
+  return {
+    ok: true,
+    message:
+      stored > 0
+        ? `Request submitted. ${stored} file(s) uploaded.`
+        : "Request submitted.",
+  };
 }

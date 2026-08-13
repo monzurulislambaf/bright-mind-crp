@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { listAppointments, appointmentStats } from "@/services/appointments";
 import { CreateAppointmentForm } from "./create-appointment-form";
-import { APPOINTMENT_STATUS } from "@/models/Appointment";
+import { APPOINTMENT_STATUS } from "@/lib/appointment/constants";
+import { ListSearch } from "@/components/crm/ListSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,11 @@ export default async function AppointmentsPage({
 }) {
   const params = await searchParams;
   const status = params.status || undefined;
-  const [appts, stats] = await Promise.all([listAppointments({ status }), appointmentStats()]);
+  const search = params.search || undefined;
+  const [appts, stats] = await Promise.all([
+    listAppointments({ status, search }),
+    appointmentStats(),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8">
@@ -50,17 +55,12 @@ export default async function AppointmentsPage({
         </div>
       </div>
 
-      <div className="mt-8 flex gap-2">
-        {["", ...APPOINTMENT_STATUS].map((s) => (
-          <Link
-            key={s || "all"}
-            href={s ? `/crm/appointments?status=${encodeURIComponent(s)}` : "/crm/appointments"}
-            className={`btn btn-sm ${(status ?? "") === s ? "btn-primary" : "btn-ghost"}`}
-          >
-            {s || "All"}
-          </Link>
-        ))}
-      </div>
+      <ListSearch
+        path="/crm/appointments"
+        search={search}
+        status={status}
+        statuses={APPOINTMENT_STATUS}
+      />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="card card-body card-border mt-6 bg-base-100 lg:col-span-2">

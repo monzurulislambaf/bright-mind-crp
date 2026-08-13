@@ -29,9 +29,13 @@ export async function queryCases({
     const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     query.$or = [
       { caseId: rx },
+      { caseType: rx },
       { instructingParty: rx },
       { serviceType: rx },
       { reportType: rx },
+      { status: rx },
+      { priority: rx },
+      { internalNotes: rx },
     ];
   }
 
@@ -116,16 +120,32 @@ export async function listApprovedPsychologists() {
   const user = await requireAuth();
   if (!hasPermission(user.role, "cases:update")) throw new Error("Not authorised.");
   await connectToDatabase();
-  return Psychologist.find({ status: "Approved" })
+  const psychs = await Psychologist.find({ status: "Approved" })
     .select("firstName lastName psychologistId hcpcNumber")
     .lean();
+  // Map to plain values so the result can cross the server→client boundary
+  // (mongoose ObjectIds carry a toJSON method and are rejected by React).
+  return psychs.map((p) => ({
+    _id: String(p._id),
+    firstName: p.firstName ?? null,
+    lastName: p.lastName ?? null,
+    psychologistId: p.psychologistId ?? null,
+    hcpcNumber: p.hcpcNumber ?? null,
+  }));
 }
 
 export async function listOrganisations() {
   const user = await requireAuth();
   if (!hasPermission(user.role, "cases:create")) throw new Error("Not authorised.");
   await connectToDatabase();
-  return Organisation.find({}).select("name orgId").sort({ name: 1 }).lean();
+  const orgs = await Organisation.find({}).select("name orgId").sort({ name: 1 }).lean();
+  // Plain values only — mongoose ObjectIds carry a toJSON method and cannot
+  // cross the server→client boundary (React 19 / Next 16 rejects them).
+  return orgs.map((o) => ({
+    _id: String(o._id),
+    name: o.name ?? null,
+    orgId: o.orgId ?? null,
+  }));
 }
 
 export async function listSolicitorsForOrganisation(orgId?: string) {
@@ -134,15 +154,29 @@ export async function listSolicitorsForOrganisation(orgId?: string) {
   await connectToDatabase();
   const query: Record<string, unknown> = {};
   if (orgId) query.organisation = orgId;
-  return Solicitor.find(query)
+  const sols = await Solicitor.find(query)
     .select("contactName solicitorId organisation")
     .sort({ contactName: 1 })
     .lean();
+  return sols.map((s) => ({
+    _id: String(s._id),
+    contactName: s.contactName ?? null,
+    solicitorId: s.solicitorId ?? null,
+    organisation: s.organisation ? String(s.organisation) : null,
+  }));
 }
 
 export async function listIndividualClients() {
   const user = await requireAuth();
   if (!hasPermission(user.role, "cases:create")) throw new Error("Not authorised.");
   await connectToDatabase();
-  return IndividualClient.find({}).select("firstName lastName clientId").lean();
+  const clients = await IndividualClient.find({})
+    .select("firstName lastName clientId")
+    .lean();
+  return clients.map((c) => ({
+    _id: String(c._id),
+    firstName: c.firstName ?? null,
+    lastName: c.lastName ?? null,
+    clientId: c.clientId ?? null,
+  }));
 }

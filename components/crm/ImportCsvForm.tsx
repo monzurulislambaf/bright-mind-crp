@@ -7,16 +7,42 @@ const TARGETS = ["firstName", "lastName", "email", "phone", "company", "role", "
 
 type Mapping = Record<string, string>;
 
+function parseCsvRow(line: string): string[] {
+  const cells: string[] = [];
+  let cur = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (line[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        cur += c;
+      }
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === ",") {
+      cells.push(cur);
+      cur = "";
+    } else {
+      cur += c;
+    }
+  }
+  cells.push(cur);
+  return cells;
+}
+
 function parseCsvRows(text: string): string[][] {
   const lines: string[][] = [];
-  const re = /("(?:[^"]|"")*"|[^,\n\r]*)/g;
   for (const line of text.split(/\r?\n/)) {
     const trimmed = line.trim();
     if (!trimmed) continue;
-    const matches = trimmed.match(re) || [];
-    const row = matches
-      .map((m) => (m.startsWith('"') && m.endsWith('"') ? m.slice(1, -1).replace(/""/g, '"') : m.trim()));
-    lines.push(row);
+    lines.push(parseCsvRow(trimmed).map((cell) => cell.trim()));
   }
   return lines;
 }
@@ -36,7 +62,9 @@ export function ImportCsvForm() {
     setRows(parsed.slice(1));
     const initial: Mapping = {};
     parsed[0].forEach((h, i) => {
-      initial[i] = h.toLowerCase() in TARGETS ? h.toLowerCase() : "";
+      const key = h.toLowerCase().trim();
+      const target = TARGETS.find((t) => t.toLowerCase() === key);
+      initial[i] = target ?? "";
     });
     setMapping(initial);
     setResult(null);

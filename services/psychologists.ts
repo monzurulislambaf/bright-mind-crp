@@ -4,7 +4,13 @@ import { connectToDatabase } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
 
-export async function listPsychologists({ status }: { status?: string }) {
+export async function listPsychologists({
+  status,
+  search,
+}: {
+  status?: string;
+  search?: string;
+}) {
   const user = await requireAuth();
   if (!hasPermission(user.role, "cases:read") && !hasPermission(user.role, "processors:review")) {
     throw new Error("Not authorised.");
@@ -13,6 +19,21 @@ export async function listPsychologists({ status }: { status?: string }) {
   const query: Record<string, unknown> = {};
   if (status && PSYCHOLOGIST_STATUS.includes(status as (typeof PSYCHOLOGIST_STATUS)[number])) {
     query.status = status;
+  }
+  if (search) {
+    const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    query.$or = [
+      { psychologistId: rx },
+      { firstName: rx },
+      { lastName: rx },
+      { email: rx },
+      { phone: rx },
+      { hcpcNumber: rx },
+      { qualifications: rx },
+      { expertise: rx },
+      { jurisdictions: rx },
+      { status: rx },
+    ];
   }
   return Psychologist.find(query).sort({ createdAt: -1 }).limit(200).lean();
 }

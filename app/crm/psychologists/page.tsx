@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listPsychologists, psychologistStats } from "@/services/psychologists";
 import { PSYCHOLOGIST_STATUS, PSYCH_BADGE } from "@/lib/psychologist/statuses";
+import { ListSearch } from "@/components/crm/ListSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +12,9 @@ export default async function PsychologistsPage({
 }) {
   const params = await searchParams;
   const status = params.status || undefined;
+  const search = params.search || undefined;
   const [psychs, stats] = await Promise.all([
-    listPsychologists({ status }),
+    listPsychologists({ status, search }),
     psychologistStats(),
   ]);
 
@@ -46,16 +48,13 @@ export default async function PsychologistsPage({
         </div>
       </div>
 
-      <div className="mt-8 flex gap-2">
-        {["", ...PSYCHOLOGIST_STATUS].map((s) => (
-          <Link
-            key={s || "all"}
-            href={s ? `/crm/psychologists?status=${encodeURIComponent(s)}` : "/crm/psychologists"}
-            className={`btn btn-sm ${(status ?? "") === s ? "btn-primary" : "btn-ghost"}`}
-          >
-            {s || "All"}
-          </Link>
-        ))}
+      <div className="mt-6">
+        <ListSearch
+          path="/crm/psychologists"
+          search={search}
+          status={status}
+          statuses={PSYCHOLOGIST_STATUS}
+        />
       </div>
 
       <div className="mt-4 overflow-x-auto">

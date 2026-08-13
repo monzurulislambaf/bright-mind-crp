@@ -2,6 +2,8 @@ import { listTasks, taskStats } from "@/services/tasks";
 import { CreateTaskForm } from "./create-task-form";
 import { TaskStatusButton } from "./task-status-button";
 import { TASK_STATUS_BADGE, TASK_PRIORITY_BADGE } from "@/lib/work/badges";
+import { TASK_STATUS } from "@/lib/work/constants";
+import { ListSearch } from "@/components/crm/ListSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +14,11 @@ export default async function TasksPage({
 }) {
   const params = await searchParams;
   const status = params.status || undefined;
-  const [tasks, stats] = await Promise.all([listTasks({ status }), taskStats()]);
+  const search = params.search || undefined;
+  const [tasks, stats] = await Promise.all([
+    listTasks({ status, search }),
+    taskStats(),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8">
@@ -22,6 +28,8 @@ export default async function TasksPage({
           <p className="mt-1 text-base-content/70">{tasks.length} task(s)</p>
         </div>
       </div>
+
+      <ListSearch path="/crm/tasks" search={search} status={status} statuses={TASK_STATUS} />
 
       <div className="stats stats-vertical w-full bg-base-200 shadow-sm sm:stats-horizontal">
         <div className="stat">

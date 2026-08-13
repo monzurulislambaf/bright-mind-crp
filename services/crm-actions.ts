@@ -349,7 +349,11 @@ export async function importLeads(rows: unknown[]): Promise<CrmActionState> {
     const row = raw as Record<string, unknown>;
     const email = String(row.email ?? "").toLowerCase().trim();
     try {
-      if (!email || existingEmails.has(email)) {
+      if (!email) {
+        invalid += 1;
+        continue;
+      }
+      if (existingEmails.has(email)) {
         duplicates += 1;
         continue;
       }

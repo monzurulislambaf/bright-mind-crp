@@ -22,6 +22,58 @@ real credentials (MongoDB URIs, passwords, secrets) to this repository.
   counters ever drift behind existing record IDs (safe to re-run; only moves
   counters forward).
 
+## Deployment (Firebase App Hosting)
+
+This app is a full-stack Next.js app (server actions, dynamic routes, MongoDB), so it
+is deployed to **Firebase App Hosting** — not static hosting.
+
+Config lives in `.firebaserc` (project `bright-mind-d0cd2`) and `apphosting.yaml`
+(runtime + env vars). The Firebase CLI is already authenticated on the developer
+machine (`firebase login:list`).
+
+**One-time setup (requires the project on the Blaze plan):**
+
+1. Upgrade the project to Blaze (pay-as-you-go):
+   https://console.firebase.google.com/project/bright-mind-d0cd2/usage/details
+2. Create the App Hosting backend:
+   ```bash
+   firebase apphosting:backends:create \
+     --project bright-mind-d0cd2 \
+     --app 1:271763270785:web:f77e0977f31e038450f180 \
+     --backend bright-mind \
+     --primary-region europe-west1 \
+     --non-interactive
+   ```
+3. Store the secrets referenced in `apphosting.yaml` and grant the backend access:
+   ```bash
+   firebase apphosting:secrets:set bright-mind-mongodb-uri
+   firebase apphosting:secrets:set bright-mind-session-secret
+   firebase apphosting:secrets:grantaccess \
+     bright-mind-mongodb-uri,bright-mind-session-secret \
+     --backend bright-mind
+   ```
+
+**Deploy:** `npm run deploy` (runs `firebase deploy --only apphosting` from the
+local checkout, which builds on Cloud Build and rolls out the new backend).
+
+> Note: `NEXT_PUBLIC_FIREBASE_*` values in `apphosting.yaml` are the public web-app
+> config (safe to commit). `MONGODB_URI` and `SESSION_SECRET` must stay in Secret
+> Manager — never inline them.
+
+### Alternative: classic Hosting + Cloud Functions (also Blaze-only)
+
+`firebase.json` also carries a classic-hosting block pinned to the site
+`bright-mind-d0cd2-ecd2e`, configured with `"source": "."` and a
+`frameworksBackend` so `firebase deploy --only hosting` builds and serves the real
+Next.js app instead of the static `public/` folder. The `webframeworks` Firebase
+experiment must be enabled locally (`firebase experiments:enable webframeworks`).
+
+**Do not deploy the `public/` folder as a static site** — it only contains Next.js
+asset files (images/video) with no `index.html`, which yields the Firebase
+"Page Not Found" page. Deploying this app also requires the Blaze plan (Cloud
+Functions), and on Windows the framework build step needs Developer Mode enabled
+(or an elevated terminal) because it creates symlinks.
+
 ## 1. System
 
 Build one unified platform containing:

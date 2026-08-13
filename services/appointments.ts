@@ -11,12 +11,29 @@ export async function getAppointment(id: string) {
   return Appointment.findById(id).lean();
 }
 
-export async function listAppointments({ status }: { status?: string }) {
+export async function listAppointments({
+  status,
+  search,
+}: {
+  status?: string;
+  search?: string;
+}) {
   const user = await requireAuth();
   if (!hasPermission(user.role, "appointments:read")) throw new Error("Not authorised.");
   await connectToDatabase();
   const query: Record<string, unknown> = {};
   if (status) query.status = status;
+  if (search) {
+    const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    query.$or = [
+      { appointmentId: rx },
+      { kind: rx },
+      { status: rx },
+      { title: rx },
+      { location: rx },
+      { notes: rx },
+    ];
+  }
   return Appointment.find(query).sort({ startsAt: 1 }).limit(200).lean();
 }
 

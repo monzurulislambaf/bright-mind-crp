@@ -29,12 +29,29 @@ export async function getMyReport(id: string) {
     .lean();
 }
 
-export async function listReports({ status }: { status?: string }) {
+export async function listReports({
+  status,
+  search,
+}: {
+  status?: string;
+  search?: string;
+}) {
   const user = await requireAuth();
   if (!hasPermission(user.role, "reports:read")) throw new Error("Not authorised.");
   await connectToDatabase();
   const query: Record<string, unknown> = {};
   if (status) query.status = status;
+  if (search) {
+    const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    query.$or = [
+      { reportId: rx },
+      { title: rx },
+      { status: rx },
+      { authorName: rx },
+      { reviewNote: rx },
+      { reviewDecision: rx },
+    ];
+  }
   return Report.find(query)
     .populate({ path: "case", select: "caseId reportType status" })
     .sort({ updatedAt: -1 })

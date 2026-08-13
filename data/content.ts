@@ -1,10 +1,9 @@
 export const homeContent = {
   hero: {
     eyebrow: "Independent · Court-Compliant · Secure",
-    heading:
-      "Asylum psychological reports, country expert evidence, and remote counselling worldwide",
+    heading: "Independent Psychological & Country Expert Reporting",
     description:
-      "Bright Mind Psychology is a specialist service for solicitors, asylum seekers, and private clients who need immigration psychological assessments, country expert reports, and qualified remote counselling.",
+      "Bright Mind Psychology Care and Reporting provides independent, court-compliant psychological and country expert services to solicitors, barristers, and legal professionals across a wide range of practice areas.",
     supporting:
       "We work with legal teams handling Immigration, Family Law, Criminal Law, Personal Injury, Employment Tribunal, and Clinical Negligence matters — delivering evidence that meets the standards required by courts, tribunals, and government bodies.",
   },

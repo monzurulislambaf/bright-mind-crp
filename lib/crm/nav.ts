@@ -24,6 +24,13 @@ export const CRM_NAV: CrmNavSection[] = [
       { href: "/crm/pipeline", label: "Pipeline", perm: "leads:read" },
       { href: "/crm/import", label: "Import Leads", perm: "leads:import" },
       { href: "/crm/onboarding", label: "Onboarding", perm: "onboarding:read" },
+      { href: "/crm/contacts", label: "Contacts", perm: "contacts:read" },
+      {
+        href: "/crm/organisations",
+        label: "Organisations",
+        perm: "organisation:read",
+      },
+      { href: "/crm/campaigns", label: "Campaigns", perm: "campaigns:read" },
     ],
   },
   {
@@ -51,9 +58,27 @@ export const CRM_NAV: CrmNavSection[] = [
     ],
   },
   {
-    title: "Tools",
+    title: "Finance",
     items: [
-      { href: "/crm/notifications", label: "Notifications", perm: "notifications:read" },
+      { href: "/crm/finance", label: "Overview", perm: "finance:read" },
+    ],
+  },
+  {
+    title: "Users & Access",
+    items: [
+      { href: "/crm/users", label: "Users", perm: "users:read" },
+      { href: "/crm/users/roles", label: "Roles", perm: "roles:read" },
+    ],
+  },
+  {
+    title: "System",
+    items: [
+      { href: "/crm/audit", label: "Audit Logs", perm: "audit:read" },
+      {
+        href: "/crm/notifications",
+        label: "Notifications",
+        perm: "notifications:read",
+      },
       { href: "/crm/search", label: "Search", perm: "cases:read" },
     ],
   },

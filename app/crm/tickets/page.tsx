@@ -2,6 +2,8 @@ import Link from "next/link";
 import { listTickets, ticketStats } from "@/services/tickets";
 import { CreateTicketForm } from "./create-ticket-form";
 import { TICKET_STATUS_BADGE, TICKET_PRIORITY_BADGE } from "@/lib/work/badges";
+import { TICKET_STATUS } from "@/lib/work/constants";
+import { ListSearch } from "@/components/crm/ListSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +14,11 @@ export default async function TicketsPage({
 }) {
   const params = await searchParams;
   const status = params.status || undefined;
-  const [tickets, stats] = await Promise.all([listTickets({ status }), ticketStats()]);
+  const search = params.search || undefined;
+  const [tickets, stats] = await Promise.all([
+    listTickets({ status, search }),
+    ticketStats(),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8">
@@ -20,6 +26,8 @@ export default async function TicketsPage({
         <h1 className="text-3xl font-bold tracking-tight">Tickets</h1>
         <p className="mt-1 text-base-content/70">{tickets.length} ticket(s)</p>
       </div>
+
+      <ListSearch path="/crm/tickets" search={search} status={status} statuses={TICKET_STATUS} />
 
       <div className="stats stats-vertical w-full bg-base-200 shadow-sm sm:stats-horizontal">
         <div className="stat">

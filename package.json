@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "create-admin": "node scripts/create-admin.cjs"
+    "create-admin": "node scripts/create-admin.cjs",
+    "deploy": "firebase deploy --only apphosting"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -15,6 +16,7 @@
     "bcryptjs": "^3.0.3",
     "daisyui": "^5.7.16",
     "dotenv": "^17.4.2",
+    "firebase": "^12.17.1",
     "framer-motion": "^13.0.0",
     "heroicons": "^2.2.0",
     "jose": "^6.2.8",

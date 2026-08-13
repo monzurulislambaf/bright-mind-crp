@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# freebuff desktop app state
+/.freebuff/
+
 # production
 /build
 
@@ -35,6 +38,10 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# firebase
+/.firebase/
+firebase-debug.log*
 
 # typescript
 *.tsbuildinfo

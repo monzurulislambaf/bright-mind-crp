@@ -4,7 +4,13 @@ import { connectToDatabase } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
 
-export async function listTickets({ status }: { status?: string }) {
+export async function listTickets({
+  status,
+  search,
+}: {
+  status?: string;
+  search?: string;
+}) {
   const user = await requireAuth();
   if (!hasPermission(user.role, "tickets:read") && !hasPermission(user.role, "tickets:create")) {
     throw new Error("Not authorised.");
@@ -12,6 +18,18 @@ export async function listTickets({ status }: { status?: string }) {
   await connectToDatabase();
   const query: Record<string, unknown> = {};
   if (status) query.status = status;
+  if (search) {
+    const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    query.$or = [
+      { ticketId: rx },
+      { subject: rx },
+      { category: rx },
+      { priority: rx },
+      { status: rx },
+      { resolution: rx },
+      { "messages.body": rx },
+    ];
+  }
   return Ticket.find(query).sort({ updatedAt: -1 }).limit(100).lean();
 }
 

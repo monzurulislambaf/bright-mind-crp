@@ -1,4 +1,9 @@
 @import "tailwindcss";
+
+/* The desktop app keeps a SQLite database in .freebuff that must never be
+   scanned (Windows file locks crash the Turbopack glob). */
+@source not "../.freebuff/**";
+
 @plugin "daisyui" {
   themes: false;
 }

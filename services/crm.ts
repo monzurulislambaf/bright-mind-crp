@@ -28,11 +28,20 @@ export async function listLeads({
   if (search) {
     const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     query.$or = [
+      { leadId: rx },
       { firstName: rx },
       { lastName: rx },
       { email: rx },
+      { phone: rx },
       { company: rx },
-      { leadId: rx },
+      { role: rx },
+      { source: rx },
+      { status: rx },
+      { priority: rx },
+      { campaign: rx },
+      { serviceInterest: rx },
+      { ownerLabel: rx },
+      { notes: rx },
     ];
   }
 

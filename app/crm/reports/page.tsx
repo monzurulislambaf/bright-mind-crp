@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listReports, reportStats } from "@/services/reports";
 import { REPORT_BADGE, REPORT_STATUS } from "@/lib/report/statuses";
+import { ListSearch } from "@/components/crm/ListSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,11 @@ export default async function ReportsPage({
 }) {
   const params = await searchParams;
   const status = params.status || undefined;
-  const [reports, stats] = await Promise.all([listReports({ status }), reportStats()]);
+  const search = params.search || undefined;
+  const [reports, stats] = await Promise.all([
+    listReports({ status, search }),
+    reportStats(),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8">
@@ -48,16 +53,8 @@ export default async function ReportsPage({
         </div>
       </div>
 
-      <div className="mt-8 flex flex-wrap gap-2">
-        {["", ...REPORT_STATUS].map((s) => (
-          <Link
-            key={s || "all"}
-            href={s ? `/crm/reports?status=${encodeURIComponent(s)}` : "/crm/reports"}
-            className={`btn btn-sm ${(status ?? "") === s ? "btn-primary" : "btn-ghost"}`}
-          >
-            {s || "All"}
-          </Link>
-        ))}
+      <div className="mt-6">
+        <ListSearch path="/crm/reports" search={search} status={status} statuses={REPORT_STATUS} />
       </div>
 
       <div className="card card-body card-border mt-6 bg-base-100">

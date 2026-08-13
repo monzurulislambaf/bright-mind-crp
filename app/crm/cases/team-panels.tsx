@@ -3,7 +3,12 @@
 import { useState, useTransition } from "react";
 import { offerToPsychologist, assignPsychologist } from "@/services/case-actions";
 
-type Psych = { _id: unknown; firstName?: string; lastName?: string; psychologistId?: string };
+type Psych = {
+  _id: unknown;
+  firstName?: string | null;
+  lastName?: string | null;
+  psychologistId?: string | null;
+};
 
 function psychLabel(p: Psych) {
   return `${p.firstName ?? ""} ${p.lastName ?? ""}`.trim() || p.psychologistId || "Unnamed";

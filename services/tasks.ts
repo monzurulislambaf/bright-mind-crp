@@ -4,12 +4,29 @@ import { connectToDatabase } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/dal";
 import { hasPermission } from "@/lib/auth/permissions";
 
-export async function listTasks({ status }: { status?: string }) {
+export async function listTasks({
+  status,
+  search,
+}: {
+  status?: string;
+  search?: string;
+}) {
   const user = await requireAuth();
   if (!hasPermission(user.role, "tasks:read")) throw new Error("Not authorised.");
   await connectToDatabase();
   const query: Record<string, unknown> = {};
   if (status) query.status = status;
+  if (search) {
+    const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    query.$or = [
+      { taskId: rx },
+      { title: rx },
+      { description: rx },
+      { priority: rx },
+      { status: rx },
+      { linkType: rx },
+    ];
+  }
   return Task.find(query).sort({ createdAt: -1 }).limit(100).lean();
 }
 

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { requireAuth } from "@/lib/auth/dal";
+import { hasPermission } from "@/lib/auth/permissions";
 import { getCase, listApprovedPsychologists } from "@/services/cases";
 import { listDocumentsForCase } from "@/services/documents";
 import { listReportsForCase } from "@/services/reports";
@@ -18,11 +20,15 @@ export default async function CaseDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const user = await requireAuth();
+  const canUpdate = hasPermission(user.role, "cases:update");
+  const canReports = hasPermission(user.role, "reports:read");
+
   const [caze, psychologists, documents, reports] = await Promise.all([
     getCase(id),
-    listApprovedPsychologists(),
+    canUpdate ? listApprovedPsychologists() : Promise.resolve([]),
     listDocumentsForCase(id),
-    listReportsForCase(id),
+    canReports ? listReportsForCase(id) : Promise.resolve([]),
   ]);
   if (!caze) notFound();
 
@@ -83,49 +89,53 @@ export default async function CaseDetailPage({
           </dl>
         </div>
 
-        <div className="card card-body card-border bg-base-100">
-          <h2 className="text-lg font-semibold">Status workflow</h2>
-          <div className="mt-3">
-            <StatusMover caseId={id} />
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="card card-body card-border bg-base-100">
-          <h2 className="text-lg font-semibold">Send offers</h2>
-          <p className="mt-1 text-sm text-base-content/70">
-            Offer this case to approved psychologists — they can accept or decline in their portal.
-          </p>
-          <div className="mt-3">
-            <OfferPsychologists caseId={id} psychologists={psychologists as []} />
-          </div>
-          <div className="divider" />
-          <h3 className="text-base font-semibold">Direct assignment</h3>
-          <div className="mt-3">
-            <AssignPsychologist caseId={id} psychologists={psychologists as []} />
-          </div>
-        </div>
-
-        <div className="card card-body card-border bg-base-100">
-          <h2 className="text-lg font-semibold">Offers sent</h2>
-          {caze.offers.length === 0 ? (
-            <p className="text-sm text-base-content/60">No offers yet.</p>
-          ) : (
-            <div className="mt-2 space-y-2">
-              {caze.offers.map((o, i) => {
-                const b = (OFFER_BADGE as Record<string, string>)[o.status] ?? "neutral";
-                return (
-                  <div key={i} className="flex items-center justify-between rounded-lg bg-base-200 p-3">
-                    <span className="text-sm">{o.psychologistId.slice(0, 8)}…</span>
-                    <span className={`badge badge-soft badge-${b}`}>{o.status}</span>
-                  </div>
-                );
-              })}
+        {canUpdate && (
+          <div className="card card-body card-border bg-base-100">
+            <h2 className="text-lg font-semibold">Status workflow</h2>
+            <div className="mt-3">
+              <StatusMover caseId={id} />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      {canUpdate && (
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <div className="card card-body card-border bg-base-100">
+            <h2 className="text-lg font-semibold">Send offers</h2>
+            <p className="mt-1 text-sm text-base-content/70">
+              Offer this case to approved psychologists — they can accept or decline in their portal.
+            </p>
+            <div className="mt-3">
+              <OfferPsychologists caseId={id} psychologists={psychologists} />
+            </div>
+            <div className="divider" />
+            <h3 className="text-base font-semibold">Direct assignment</h3>
+            <div className="mt-3">
+              <AssignPsychologist caseId={id} psychologists={psychologists} />
+            </div>
+          </div>
+
+          <div className="card card-body card-border bg-base-100">
+            <h2 className="text-lg font-semibold">Offers sent</h2>
+            {caze.offers.length === 0 ? (
+              <p className="text-sm text-base-content/60">No offers yet.</p>
+            ) : (
+              <div className="mt-2 space-y-2">
+                {caze.offers.map((o, i) => {
+                  const b = (OFFER_BADGE as Record<string, string>)[o.status] ?? "neutral";
+                  return (
+                    <div key={i} className="flex items-center justify-between rounded-lg bg-base-200 p-3">
+                      <span className="text-sm">{o.psychologistId.slice(0, 8)}…</span>
+                      <span className={`badge badge-soft badge-${b}`}>{o.status}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="card card-body card-border mt-6 bg-base-100">
         <h2 className="text-lg font-semibold">Internal notes</h2>
@@ -134,17 +144,21 @@ export default async function CaseDetailPage({
             {caze.internalNotes}
           </p>
         )}
-        <div className="mt-4">
-          <CaseNoteForm caseId={id} />
-        </div>
+        {canUpdate && (
+          <div className="mt-4">
+            <CaseNoteForm caseId={id} />
+          </div>
+        )}
       </div>
 
       <div className="card card-body card-border mt-6 bg-base-100">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-semibold">Reports</h2>
-          <Link href="/crm/reports/new" className="btn btn-sm btn-outline">
-            New report
-          </Link>
+          {hasPermission(user.role, "reports:create") && (
+            <Link href="/crm/reports/new" className="btn btn-sm btn-outline">
+              New report
+            </Link>
+          )}
         </div>
         {reports.length === 0 ? (
           <p className="text-sm text-base-content/60">No reports for this case.</p>
@@ -220,8 +234,12 @@ export default async function CaseDetailPage({
             </table>
           </div>
         )}
-        <div className="divider" />
-        <DocumentUploadForm caseId={id} />
+        {hasPermission(user.role, "documents:create") && (
+          <>
+            <div className="divider" />
+            <DocumentUploadForm caseId={id} />
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,10 @@
+# Turbopack's filesystem cache (enabled by default in Next.js 16) is written to
+# .netlify/.next/cache during the build. Those cache files are never deployed,
+# so exclude them from Netlify's secrets scanning.
+# See https://docs.netlify.com/build/environment-variables/secrets-controller/
+[build]
+  command = "npm run build -- --webpack"
+  publish = ".next"
+
+[build.environment]
+  SECRETS_SCAN_OMIT_PATHS = ".netlify/.next/cache"

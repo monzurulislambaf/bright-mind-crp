@@ -38,7 +38,7 @@ export function Navbar() {
         <div className="navbar-start gap-1">
           <button
             type="button"
-            className="btn btn-ghost btn-square lg:hidden"
+            className="btn btn-ghost btn-square xl:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls={menuId}
@@ -62,7 +62,7 @@ export function Navbar() {
         </div>
 
         <div className="navbar-center hidden xl:flex">
-          <ul className="menu menu-horizontal gap-0.5 px-1 text-sm">
+          <ul className="menu menu-horizontal gap-0.5 px-0 text-[13px]">
             {primaryNav.map((link) => {
               const active = isActive(link.href);
               return (
@@ -70,7 +70,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     className={cn(
-                      "rounded-field",
+                      "rounded-field whitespace-nowrap px-1.5",
                       active && "bg-primary/10 font-medium text-primary"
                     )}
                     aria-current={active ? "page" : undefined}
@@ -93,10 +93,10 @@ export function Navbar() {
           </Link>
           <Link
             href="/request-a-report"
-            className="btn btn-primary btn-sm sm:btn-md gap-1.5"
+            className="btn btn-primary btn-sm gap-1.5"
           >
-            <span className="hidden sm:inline">Request a Report</span>
-            <span className="sm:hidden">Report</span>
+            <span className="hidden sm:inline">Instruct an Expert</span>
+            <span className="sm:hidden">Expert</span>
             <ArrowRightIcon
               className="hidden h-4 w-4 sm:block"
               aria-hidden="true"
@@ -109,7 +109,7 @@ export function Navbar() {
         {open ? (
           <motion.div
             id={menuId}
-            className="border-t border-base-300 bg-base-100 lg:hidden"
+            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-base-300 bg-base-100 xl:hidden"
             initial={reduce ? false : { height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={reduce ? undefined : { height: 0, opacity: 0 }}
@@ -140,7 +140,7 @@ export function Navbar() {
                     onClick={closeMenu}
                     className="btn btn-primary justify-start"
                   >
-                    Request a Report
+                    Instruct an Expert
                   </Link>
                 </li>
                 <li>

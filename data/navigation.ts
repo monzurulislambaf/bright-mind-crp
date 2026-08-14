@@ -5,42 +5,40 @@ export type NavLink = {
 
 export const primaryNav: NavLink[] = [
   { href: "/", label: "Home" },
-  { href: "/services", label: "Services" },
-  { href: "/reporting", label: "Reporting" },
-  { href: "/country-reports", label: "Country Reports" },
-  { href: "/counselling", label: "Counselling" },
-  { href: "/for-solicitors", label: "For Solicitors" },
-  { href: "/for-psychologists", label: "Professionals" },
+  { href: "/services", label: "Psychological Services" },
+  { href: "/expert-forensic", label: "Expert & Forensic" },
+  { href: "/country-reports", label: "Country Expertise" },
+  { href: "/training-research", label: "Training & Research" },
+  { href: "/our-experts", label: "Our Experts" },
+  { href: "/about", label: "About" },
   { href: "/insights", label: "Insights" },
   { href: "/contact", label: "Contact" },
 ];
 
 export const footerNav = {
-  company: [
+  explore: [
+    { href: "/", label: "Home" },
     { href: "/about", label: "About" },
-    { href: "/services", label: "Services" },
-    { href: "/how-it-works", label: "How It Works" },
+    { href: "/our-experts", label: "Our Experts" },
     { href: "/insights", label: "Insights" },
     { href: "/faqs", label: "FAQs" },
     { href: "/contact", label: "Contact" },
   ],
   services: [
-    { href: "/reporting", label: "Psychological Reporting" },
-    { href: "/country-reports", label: "Country Expert Reports" },
+    { href: "/services", label: "Psychological Services" },
+    { href: "/expert-forensic", label: "Expert & Forensic Psychology" },
+    { href: "/country-reports", label: "Country Expertise" },
+    { href: "/training-research", label: "Training & Research" },
     { href: "/counselling", label: "Counselling" },
-    { href: "/request-a-report", label: "Request a Report" },
+    { href: "/reporting", label: "Psychological Reporting" },
   ],
   professionals: [
     { href: "/for-solicitors", label: "For Solicitors" },
     { href: "/for-psychologists", label: "For Psychologists" },
     { href: "/for-individuals", label: "For Individuals" },
+    { href: "/join-psychologist-network", label: "Join the Expert Network" },
     { href: "/solicitor-partnership", label: "Solicitor Partnership" },
-    { href: "/join-psychologist-network", label: "Join Psychologist Network" },
-  ],
-  individuals: [
-    { href: "/for-individuals", label: "For Individuals" },
-    { href: "/request-callback", label: "Request Callback" },
-    { href: "/contact", label: "Contact" },
+    { href: "/request-a-report", label: "Request a Report" },
   ],
   legal: [
     { href: "/privacy", label: "Privacy" },
@@ -59,9 +57,9 @@ export const siteMeta = {
   name: "Bright Mind Psychology",
   shortName: "Bright Mind",
   tagline:
-    "Asylum psychological reports, country expert evidence, and remote counselling",
+    "Professional psychological services, expert & forensic psychology, country expertise, and training & research",
   description:
-    "Bright Mind Psychology provides asylum psychological reports, immigration psychological assessments, country expert reports, and remote counselling for solicitors, asylum seekers, and clients worldwide.",
+    "Bright Mind Psychology is a psychology organisation providing professional psychological services, expert and forensic psychology evidence for legal proceedings, country expertise, and training & research — delivered by qualified professionals.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://brightmind.care",
   region: "United Kingdom",
 } as const;

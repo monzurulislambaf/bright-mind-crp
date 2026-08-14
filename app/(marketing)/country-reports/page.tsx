@@ -10,9 +10,9 @@ import { CheckIcon } from "@/components/site/icons";
 import { FadeIn, Stagger, StaggerItem } from "@/components/site/Motion";
 
 export const metadata: Metadata = {
-  title: "Country Expert Reports",
+  title: "Country Expertise",
   description:
-    "Country expert reports for asylum and immigration proceedings, including mental-health landscape evidence, return-risk context, and country conditions analysis.",
+    "Country expertise for asylum and immigration proceedings — sourced, dated and reviewable analysis of mental-health systems, treatment access, and conditions relevant to return risk.",
   alternates: { canonical: "/country-reports" },
 };
 
@@ -20,16 +20,16 @@ export default function CountryReportsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Country expert reports"
+        eyebrow="Country Expertise"
         title={countryReportsContent.heading}
         description={countryReportsContent.intro}
         breadcrumbs={[
           { href: "/", label: "Home" },
-          { label: "Country Reports" },
+          { label: "Country Expertise" },
         ]}
         ctas={[
-          { href: "/request-a-report", label: "Request a country report" },
-          { href: "/services", label: "See all services", primary: false },
+          { href: "/request-a-report", label: "Request Country Expert Evidence" },
+          { href: "/expert-forensic", label: "Instruct an Expert", primary: false },
         ]}
       />
 
@@ -92,7 +92,7 @@ export default function CountryReportsPage() {
           <FadeIn>
             <SectionHeading
               eyebrow="Professional difference"
-              title="Why legal teams commission expert country evidence"
+              title="Sourced, dated and reviewable country evidence"
               subtitle="Case-specific analysis carries more weight than generic online research."
             />
           </FadeIn>
@@ -105,6 +105,12 @@ export default function CountryReportsPage() {
                 </li>
               ))}
             </ul>
+            <p className="mt-6 rounded-box border border-dashed border-base-300 bg-base-200/50 p-4 text-sm text-base-content/70">
+              Country information is sourced, dated and reviewable. Each report
+              records its sources and last-reviewed date so the evidence can be
+              tested. We never fabricate country expertise or unsupported
+              information.
+            </p>
           </FadeIn>
         </div>
       </section>
@@ -125,10 +131,10 @@ export default function CountryReportsPage() {
       </section>
 
       <CTASection
-        title="Need a country expert report for an asylum or immigration matter?"
-        description="Tell us the jurisdiction, legal questions, and deadlines — we will match the right specialist pathway."
+        title="Need country expert evidence for a matter?"
+        description="Tell us the jurisdiction, legal questions, and deadlines — we will confirm availability and match the right specialist pathway."
         primaryHref="/request-a-report"
-        primaryLabel="Request a Report"
+        primaryLabel="Request Country Expert Evidence"
         secondaryHref="/contact"
         secondaryLabel="Contact us"
       />

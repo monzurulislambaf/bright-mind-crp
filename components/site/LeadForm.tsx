@@ -9,6 +9,7 @@ import {
   type PublicFormType,
 } from "@/services/leads";
 import { services, practiceAreas } from "@/data/services";
+import { trainingProgrammes } from "@/data/training";
 
 const baseSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -38,6 +39,8 @@ const baseSchema = z.object({
   insurance: z.string().optional(),
   additionalInformation: z.string().optional(),
   position: z.string().optional(),
+  country: z.string().optional(),
+  course: z.string().optional(),
 });
 
 type FieldSchema = z.input<typeof baseSchema>;
@@ -160,6 +163,22 @@ const FIELD_CONFIG: Record<string, FieldConfig> = {
     full: true,
     as: "textarea",
   },
+  country: {
+    label: "Country / jurisdiction",
+    placeholder: "e.g. Bangladesh",
+    required: true,
+  },
+  course: {
+    label: "Training programme",
+    full: true,
+    as: "select",
+    options: [
+      { value: "", label: "Select a programme" },
+      ...trainingProgrammes.map((p) => ({ value: p.title, label: p.title })),
+      { value: "In-house / custom training", label: "In-house / custom training" },
+      { value: "Not sure / other", label: "Not sure / other" },
+    ],
+  },
   consent: {
     label: "Consent",
     as: "consent",
@@ -186,6 +205,49 @@ const FORM_PRESETS: Record<
     ],
     intro:
       "Share the essentials of your instruction and our team will respond with next steps.",
+  },
+  instruct_expert: {
+    fields: [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "company",
+      "reportType",
+      "caseInformation",
+      "supportingInformation",
+      "consent",
+    ],
+    intro:
+      "Tell us about the legal question and your matter — our expert division will confirm whether expert evidence is warranted and match the right specialist.",
+  },
+  country_expert: {
+    fields: [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "company",
+      "country",
+      "caseInformation",
+      "consent",
+    ],
+    intro:
+      "Tell us the jurisdiction and the legal questions — we will confirm country expert availability and the right pathway.",
+  },
+  training: {
+    fields: [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "company",
+      "course",
+      "notes",
+      "consent",
+    ],
+    intro:
+      "Register your interest in a training programme — dates, fees, and CPD points are confirmed on enquiry.",
   },
   solicitor_partner: {
     fields: [

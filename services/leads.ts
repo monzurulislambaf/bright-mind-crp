@@ -10,6 +10,9 @@ import { headers } from "next/headers";
 
 export type PublicFormType =
   | "request_report"
+  | "instruct_expert"
+  | "country_expert"
+  | "training"
   | "solicitor_partner"
   | "psychologist"
   | "individual"
@@ -47,6 +50,8 @@ const LeadPayload = z.object({
   insurance: z.string().trim().optional().default(""),
   additionalInformation: z.string().trim().optional().default(""),
   position: z.string().trim().optional().default(""),
+  country: z.string().trim().optional().default(""),
+  course: z.string().trim().optional().default(""),
 });
 
 export type LeadFormPayload = z.input<typeof LeadPayload>;
@@ -75,6 +80,8 @@ function composeNotes(data: z.infer<typeof LeadPayload>): string {
     ["Availability", data.availability],
     ["Insurance", data.insurance],
     ["Additional information", data.additionalInformation],
+    ["Country / jurisdiction", data.country],
+    ["Training programme", data.course],
   ];
 
   return sections

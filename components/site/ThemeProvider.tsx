@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useSyncExternalStore,
 } from "react";
@@ -56,6 +57,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     () => false
   );
 
+  // After hydration, re-apply the persisted/system theme so the toggle state
+  // and the page colours can never diverge (e.g. if the inline init script in
+  // the root layout was skipped or ran before localStorage was readable).
+  useEffect(() => {
+    applyTheme(getSnapshot());
+  }, []);
+
   const setTheme = useCallback((next: ThemeName) => {
     window.localStorage.setItem(STORAGE_KEY, next);
     applyTheme(next);
@@ -63,8 +71,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme(theme === "bright" ? "bright-dark" : "bright");
-  }, [setTheme, theme]);
+    // Read the live value (localStorage/system) rather than the possibly
+    // stale `theme` closure, so rapid clicks always alternate correctly.
+    setTheme(getSnapshot() === "bright" ? "bright-dark" : "bright");
+  }, [setTheme]);
 
   const value = useMemo(
     () => ({ theme, setTheme, toggleTheme, mounted }),

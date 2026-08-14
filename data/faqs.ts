@@ -2,7 +2,7 @@ export type Faq = {
   id: string;
   question: string;
   answer: string;
-  category: "services" | "process" | "network" | "contact";
+  category: "services" | "process" | "network" | "contact" | "training" | "forensic" | "country";
 };
 
 export const faqs: Faq[] = [
@@ -75,5 +75,61 @@ export const faqs: Faq[] = [
     answer:
       "Use our Contact form or Request a Callback, and a member of our team will respond promptly.",
     category: "contact",
+  },
+  {
+    id: "forensic-division",
+    question: "What is the expert and forensic division?",
+    answer:
+      "It is a specialist division within Bright Mind that prepares independent expert psychological evidence for courts, tribunals, and legal teams. It is one part of the organisation — alongside psychological services, country expertise, and training & research.",
+    category: "forensic",
+  },
+  {
+    id: "instruct-expert",
+    question: "How do I instruct an expert for a court or tribunal matter?",
+    answer:
+      "Submit an 'Instruct an Expert' enquiry with the legal question, deadlines, and any supporting records already available. Our team will confirm whether expert evidence is warranted, scope the instruction, and match a qualified, conflict-checked expert.",
+    category: "forensic",
+  },
+  {
+    id: "forensic-vs-services",
+    question: "Is expert evidence the same as psychological services?",
+    answer:
+      "No. Expert and forensic psychology is a specialist division preparing independent evidence for legal proceedings. Psychological services such as assessment, consultation, and counselling are kept clearly separate from forensic evidence pathways.",
+    category: "forensic",
+  },
+  {
+    id: "country-sourcing",
+    question: "How is country information sourced and kept current?",
+    answer:
+      "Country reports are prepared by specialists using sourced, dated and reviewable information, and are reviewed before release. Last-reviewed dates and sources are recorded so the evidence can be tested. Never assume a country report is a substitute for checking current sources with our team.",
+    category: "country",
+  },
+  {
+    id: "country-request",
+    question: "How do I request country expert evidence for a jurisdiction?",
+    answer:
+      "Submit a Country Expert Request with the jurisdiction, legal questions, and deadlines. For jurisdictions outside our current list, contact us to discuss availability — we never fabricate country expertise.",
+    category: "country",
+  },
+  {
+    id: "training",
+    question: "Does Bright Mind provide training and CPD?",
+    answer:
+      "Yes. We develop workshops, webinars, CPD sessions, and in-house training for psychologists, legal teams, and organisations. Programmes are built with our expert panel and confirmed on request — dates, fees, and CPD points are confirmed when you register interest.",
+    category: "training",
+  },
+  {
+    id: "training-register",
+    question: "How do I register for training?",
+    answer:
+      "Use the training registration form on the Training & Research page, or contact us directly. Tell us which programme interests you and your organisation, and our team will confirm availability and fees.",
+    category: "training",
+  },
+  {
+    id: "expert-profiles",
+    question: "Why are some expert profiles not yet published?",
+    answer:
+      "We do not publish expert credentials unless they are verified. Individual profiles appear on Our Experts as experts are onboarded and compliance-reviewed; in the meantime you can contact us to confirm the current panel for your matter.",
+    category: "network",
   },
 ];

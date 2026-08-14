@@ -4,8 +4,10 @@ import {
   BeakerIcon,
   BookOpenIcon,
   LockClosedIcon,
+  ArrowRightIcon,
 } from "@heroicons/react/24/outline";
-import { aboutContent } from "@/data/content";
+import Link from "next/link";
+import { aboutContent, corePillars } from "@/data/content";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CTASection } from "@/components/site/CTASection";
@@ -107,13 +109,48 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="section-pad border-y border-base-300 bg-base-200/40">
+        <div className="container-page">
+          <FadeIn>
+            <SectionHeading
+              eyebrow="What we offer"
+              title="Four pillars, one organisation"
+              subtitle="Every part of Bright Mind shares the same professional, ethical, and secure standards."
+            />
+          </FadeIn>
+          <Stagger className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {corePillars.map((pillar) => (
+              <StaggerItem key={pillar.id}>
+                <article className="surface-card h-full">
+                  <div className="card-body gap-3">
+                    <h3 className="font-display text-lg font-semibold text-primary">
+                      {pillar.title}
+                    </h3>
+                    <p className="flex-1 text-sm text-base-content/70">
+                      {pillar.summary}
+                    </p>
+                    <Link
+                      href={pillar.href}
+                      className="btn btn-ghost btn-sm gap-1 px-0 text-primary"
+                    >
+                      Learn more
+                      <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  </div>
+                </article>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
       <CTASection
         title="Ready to work with Bright Mind?"
-        description="Instruct a report, join our network, or speak with our team."
-        primaryHref="/request-a-report"
-        primaryLabel="Request a Report"
-        secondaryHref="/contact"
-        secondaryLabel="Contact us"
+        description="Enquire about psychological services, instruct an expert, or speak with our team."
+        primaryHref="/contact"
+        primaryLabel="Enquire / Book"
+        secondaryHref="/request-a-report"
+        secondaryLabel="Instruct an Expert"
       />
     </>
   );

@@ -26,8 +26,8 @@ export default function InsightsPage() {
           { label: "Insights" },
         ]}
         ctas={[
-          { href: "/for-solicitors", label: "Solicitor pathway" },
-          { href: "/reporting", label: "Reporting pathway", primary: false },
+          { href: "/expert-forensic", label: "Expert & forensic division" },
+          { href: "/training-research", label: "Training & research", primary: false },
         ]}
       />
 
@@ -68,11 +68,11 @@ export default function InsightsPage() {
 
       <CTASection
         title="Looking for the right pathway?"
-        description="Explore reporting, country evidence, counselling, or speak with the team about your matter."
-        primaryHref="/request-a-report"
-        primaryLabel="Request a Report"
-        secondaryHref="/contact"
-        secondaryLabel="Contact us"
+        description="Explore psychological services, expert evidence, country expertise, or training — or speak with the team about your matter."
+        primaryHref="/contact"
+        primaryLabel="Enquire / Book"
+        secondaryHref="/request-a-report"
+        secondaryLabel="Instruct an Expert"
       />
     </>
   );

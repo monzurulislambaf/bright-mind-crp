@@ -3,10 +3,13 @@ import { siteMeta } from "@/data/navigation";
 
 const routes = [
   "/",
-  "/about",
   "/services",
-  "/reporting",
+  "/expert-forensic",
   "/country-reports",
+  "/training-research",
+  "/our-experts",
+  "/about",
+  "/reporting",
   "/counselling",
   "/insights",
   "/for-solicitors",

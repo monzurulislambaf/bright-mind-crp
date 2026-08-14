@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { services, practiceAreas } from "@/data/services";
+import { psychologicalServices } from "@/data/services";
 import { servicesIntro } from "@/data/content";
 import { PageHero } from "@/components/site/PageHero";
 import { ServiceCard } from "@/components/site/ServiceCard";
@@ -9,7 +9,7 @@ import { FadeIn, Stagger, StaggerItem } from "@/components/site/Motion";
 import { CheckIcon } from "@/components/site/icons";
 
 export const metadata: Metadata = {
-  title: "Services",
+  title: "Psychological Services",
   description: servicesIntro,
   alternates: { canonical: "/services" },
 };
@@ -18,23 +18,23 @@ export default function ServicesPage() {
   return (
     <>
       <PageHero
-        eyebrow="Services"
-        title="Independent psychological and country expert services"
+        eyebrow="Psychological Services"
+        title="Professional psychological services for individuals and organisations"
         description={servicesIntro}
         breadcrumbs={[
           { href: "/", label: "Home" },
-          { label: "Services" },
+          { label: "Psychological Services" },
         ]}
         ctas={[
-          { href: "/request-a-report", label: "Request a Report" },
-          { href: "/contact", label: "Speak to our team", primary: false },
+          { href: "/contact", label: "Enquire / Book" },
+          { href: "/request-a-report", label: "Instruct an Expert", primary: false },
         ]}
       />
 
       <section className="section-pad">
         <div className="container-page">
           <Stagger className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {services.map((service) => (
+            {psychologicalServices.map((service) => (
               <StaggerItem key={service.id}>
                 <div id={service.id} className="scroll-mt-28 h-full">
                   <ServiceCard service={service} />
@@ -52,11 +52,13 @@ export default function ServicesPage() {
               Service detail
             </h2>
             <p className="mt-4 text-base-content/70">
-              Each service is structured for legal relevance, with clear use
-              cases and a secure path from instruction to release.
+              Each service explains what it is, who it is for, what it involves,
+              and who provides it. Suitability is always confirmed before any
+              commitment, and forensic evidence pathways are kept separate from
+              psychological services.
             </p>
             <div className="mt-8 space-y-6">
-              {services.map((service) => (
+              {psychologicalServices.map((service) => (
                 <article
                   key={service.id}
                   id={`${service.id}-detail`}
@@ -107,25 +109,27 @@ export default function ServicesPage() {
             <div className="surface-card">
               <div className="card-body">
                 <h2 className="font-display text-2xl font-semibold text-primary">
-                  Request a service
+                  Enquire / Book
                 </h2>
                 <p className="text-base-content/70">
-                  Tell us what you need and we will match the right expert and
-                  pathway.
+                  Tell us what you need and we will confirm suitability and the
+                  right pathway for you.
                 </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {practiceAreas.map((area) => (
-                    <span key={area} className="badge badge-soft badge-neutral badge-sm">
-                      {area}
-                    </span>
-                  ))}
-                </div>
                 <div className="mt-4">
                   <LeadForm
-                    formType="request_report"
+                    formType="individual"
                     source="services_page"
-                    campaign="services"
-                    submitLabel="Request a Report"
+                    campaign="psychological-services"
+                    submitLabel="Send Enquiry"
+                    showFields={[
+                      "firstName",
+                      "lastName",
+                      "email",
+                      "phone",
+                      "reportType",
+                      "notes",
+                      "consent",
+                    ]}
                   />
                 </div>
               </div>
@@ -135,8 +139,8 @@ export default function ServicesPage() {
       </section>
 
       <CTASection
-        title="Not sure which service you need?"
-        description="Our team can help you identify the right report or certificate for your matter."
+        title="Not sure which service is right for you?"
+        description="Our team can help you understand your options — honestly and without obligation."
         primaryHref="/contact"
         primaryLabel="Contact us"
         secondaryHref="/request-callback"

@@ -5,7 +5,9 @@ declare global {
 }
 
 export async function connectToDatabase() {
-  const MONGODB_URI = process.env.MONGODB_URI;
+  // Read via an alias so the value is not inlined into the build output.
+  const env = process.env;
+  const MONGODB_URI = env.MONGODB_URI;
   if (!MONGODB_URI) {
     throw new Error(
       "Please define the MONGODB_URI environment variable inside .env.local"

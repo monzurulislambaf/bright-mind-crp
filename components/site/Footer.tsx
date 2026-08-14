@@ -6,6 +6,13 @@ import {
 } from "@heroicons/react/24/outline";
 import { footerNav, siteContact, siteMeta } from "@/data/navigation";
 
+const columns = [
+  { title: "Explore", links: footerNav.explore },
+  { title: "Services", links: footerNav.services },
+  { title: "Professionals", links: footerNav.professionals },
+  { title: "Legal", links: footerNav.legal },
+] as const;
+
 export function Footer() {
   const year = new Date().getFullYear();
 
@@ -38,41 +45,16 @@ export function Footer() {
           </div>
         </aside>
 
-        <nav aria-label="Company">
-          <h6 className="footer-title opacity-70">Company</h6>
-          {footerNav.company.map((link) => (
-            <Link key={link.href} href={link.href} className="link link-hover">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <nav aria-label="Services">
-          <h6 className="footer-title opacity-70">Services</h6>
-          {footerNav.services.map((link) => (
-            <Link key={link.href} href={link.href} className="link link-hover">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <nav aria-label="Professionals">
-          <h6 className="footer-title opacity-70">Professionals</h6>
-          {footerNav.professionals.map((link) => (
-            <Link key={link.href} href={link.href} className="link link-hover">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <nav aria-label="Legal">
-          <h6 className="footer-title opacity-70">Legal</h6>
-          {footerNav.legal.map((link) => (
-            <Link key={link.href} href={link.href} className="link link-hover">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        {columns.map((column) => (
+          <nav key={column.title} aria-label={column.title}>
+            <h6 className="footer-title opacity-70">{column.title}</h6>
+            {column.links.map((link) => (
+              <Link key={link.href} href={link.href} className="link link-hover">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        ))}
       </div>
 
       <div className="container-page border-t border-base-300 py-6">
@@ -80,7 +62,7 @@ export function Footer() {
           <p>
             © {year} {siteMeta.name}
           </p>
-          <p>Independent psychological and country expert evidence.</p>
+          <p>Professional psychology, expert evidence, country expertise, and training & research.</p>
         </div>
       </div>
     </footer>

@@ -2,14 +2,27 @@ import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const secretKey = process.env.SESSION_SECRET;
-if (!secretKey) {
-  throw new Error("SESSION_SECRET is not defined");
-}
-
-const encodedKey = new TextEncoder().encode(secretKey);
 const SESSION_COOKIE = "bm_session";
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
+
+// The secret is read lazily inside a function instead of at module scope.
+// Next.js inlines statically-referenced `process.env.X` values at build time;
+// reading at module scope baked SESSION_SECRET into the Turbopack build cache
+// and tripped Netlify's secrets scanner. Function-scope reads stay runtime-only.
+let encodedKey: Uint8Array | undefined;
+
+function getEncodedKey(): Uint8Array {
+  if (encodedKey) {
+    return encodedKey;
+  }
+  const env = process.env;
+  const secretKey = env.SESSION_SECRET;
+  if (!secretKey) {
+    throw new Error("SESSION_SECRET is not defined");
+  }
+  encodedKey = new TextEncoder().encode(secretKey);
+  return encodedKey;
+}
 
 export interface SessionPayload {
   userId: string;
@@ -22,14 +35,14 @@ export async function encrypt(payload: SessionPayload): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(encodedKey);
+    .sign(getEncodedKey());
 }
 
 export async function decrypt(
   session: string | undefined = ""
 ): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(session, encodedKey, {
+    const { payload } = await jwtVerify(session, getEncodedKey(), {
       algorithms: ["HS256"],
     });
     return {

@@ -1,11 +1,11 @@
 export const homeContent = {
   hero: {
-    eyebrow: "Independent · Court-Compliant · Secure",
-    heading: "Independent Psychological & Country Expert Reporting",
+    eyebrow: "Qualified professionals · Ethical practice · Secure systems",
+    heading: "Psychology Expertise for Individuals, Professionals and Legal Services",
     description:
-      "Bright Mind Psychology Care and Reporting provides independent, court-compliant psychological and country expert services to solicitors, barristers, and legal professionals across a wide range of practice areas.",
+      "Bright Mind is a psychology organisation providing professional psychological services, expert and forensic psychology, country expertise, and training and research — delivered by qualified professionals under clear ethical and professional standards.",
     supporting:
-      "We work with legal teams handling Immigration, Family Law, Criminal Law, Personal Injury, Employment Tribunal, and Clinical Negligence matters — delivering evidence that meets the standards required by courts, tribunals, and government bodies.",
+      "For individuals we offer assessment, consultation, and psychological support pathways. For legal teams we provide independent expert evidence — from psychological reports to country expert analysis — prepared for court and tribunal scrutiny. For psychologists and professionals we offer an expert network, training, and research-informed insight.",
   },
   stats: [
     { value: "15+", label: "country jurisdictions covered" },
@@ -460,4 +460,114 @@ export const howItWorksContent = {
 } as const;
 
 export const servicesIntro =
-  "Bright Mind Psychology Care and Reporting provides independent, court-compliant psychological and country expert services to solicitors, barristers, and other legal professionals across a wide range of practice areas. Every report is prepared to the standards required by the relevant court, tribunal, or institution, delivered with clarity, objectivity, and rigour.";
+  "Bright Mind provides professional psychological services for individuals and organisations — assessment, consultation, and psychological support delivered by qualified professionals. Where a matter involves legal proceedings, our specialist expert and forensic division prepares independent psychological evidence, and our country expertise service provides sourced, dated and reviewable country analysis.";
+
+export const corePillars = [
+  {
+    id: "psychological-services",
+    title: "Psychological Services",
+    summary:
+      "Assessment, consultation, and psychological support delivered by qualified professionals, with clear pathways for individuals and referring professionals.",
+    href: "/services",
+    cta: "Enquire / Book Psychological Services",
+  },
+  {
+    id: "expert-forensic",
+    title: "Expert & Forensic Psychology",
+    summary:
+      "A specialist division preparing independent expert psychological evidence for courts, tribunals, and legal teams — clearly separate from our broader service identity.",
+    href: "/expert-forensic",
+    cta: "Instruct an Expert",
+  },
+  {
+    id: "country-expertise",
+    title: "Country Expertise",
+    summary:
+      "Sourced, dated and reviewable country analysis — mental-health systems, treatment access, and conditions relevant to return risk and asylum proceedings.",
+    href: "/country-reports",
+    cta: "Request Country Expert Evidence",
+  },
+  {
+    id: "training-research",
+    title: "Training & Research",
+    summary:
+      "Professional development, workshops, webinars, and research-informed insight for psychologists, legal teams, and the wider community.",
+    href: "/training-research",
+    cta: "Explore Training & Research",
+  },
+] as const;
+
+export const expertForensicContent = {
+  heading:
+    "A specialist division for independent expert psychological evidence",
+  intro:
+    "Bright Mind's expert and forensic division prepares independent psychological evidence for courts, tribunals, and legal teams. It operates as a specialist division within the organisation — not as the whole of what Bright Mind does.",
+  whatWeProvide: [
+    "Expert psychological reports for civil, criminal, family, and immigration proceedings",
+    "Forensic psychological assessment structured to the legal question",
+    "Immigration and asylum psychological evidence, including trauma and vulnerability",
+    "Mental health expert evidence where relevant to the issues in issue",
+    "Court and legal expert evidence with expert consultation for instructing teams",
+  ],
+  process: [
+    {
+      title: "Instruction & triage",
+      text: "Confirm the legal question, deadline, and supporting records — and whether expert evidence is genuinely needed.",
+    },
+    {
+      title: "Expert allocation",
+      text: "Match the matter to a qualified, conflict-checked expert with relevant expertise.",
+    },
+    {
+      title: "Assessment",
+      text: "Clinical interview, behavioural observation, psychometrics where appropriate, and structured document review.",
+    },
+    {
+      title: "Drafting & quality review",
+      text: "Evidence-led report drafting with internal quality review before release.",
+    },
+    {
+      title: "Secure release",
+      text: "Final authorised output delivered securely, with audited release controls.",
+    },
+  ],
+  standards: [
+    "Independent conclusions, not advocacy-led wording.",
+    "Evidence and limitations stated clearly enough for scrutiny.",
+    "Sensitive information handled to high data-protection standards.",
+    "Never released outside the instruction and consent framework.",
+  ],
+} as const;
+
+export const trainingContent = {
+  heading: "Training, workshops, and research-informed professional development",
+  intro:
+    "Bright Mind develops professional training and research-informed insight for psychologists, legal teams, and organisations working with vulnerable people. Programmes are built with our expert panel and confirmed on request.",
+  formats: [
+    {
+      title: "Workshops",
+      summary: "Interactive, practical sessions for professionals.",
+    },
+    {
+      title: "Webinars",
+      summary: "Accessible online sessions for teams across jurisdictions.",
+    },
+    {
+      title: "CPD & Professional Development",
+      summary: "Structured development with CPD confirmed per programme.",
+    },
+    {
+      title: "In-House Training",
+      summary: "Tailored programmes designed around an organisation's needs.",
+    },
+  ],
+  research:
+    "Research-informed insight — including our Insights hub — shares professional knowledge on psychological evidence, country expertise, and secure legal workflows. We do not publish unsupported clinical or medical claims.",
+} as const;
+
+export const ourExpertsContent = {
+  heading: "A vetted panel of qualified professionals",
+  intro:
+    "Bright Mind works with qualified psychologists, counsellors, and country experts, each reviewed for registration, qualifications, and relevant expertise before joining the panel. Public profiles are published as experts are onboarded — nothing is invented.",
+  note: "Public profiles show professional information only. Registration status, compliance documents, and verification details are held internally and are not published.",
+} as const;

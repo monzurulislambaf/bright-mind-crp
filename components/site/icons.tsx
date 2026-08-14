@@ -4,9 +4,16 @@ import {
   GlobeAltIcon,
   ExclamationTriangleIcon,
   HeartIcon,
+  ClipboardDocumentCheckIcon,
+  ChatBubbleLeftRightIcon,
+  SparklesIcon,
+  VideoCameraIcon,
+  ScaleIcon,
+  MagnifyingGlassIcon,
+  AcademicCapIcon,
   CheckIcon as HeroCheckIcon,
 } from "@heroicons/react/24/outline";
-import type { Service } from "@/data/services";
+import type { ServiceIconName } from "@/data/services";
 
 const iconClass = "h-6 w-6";
 
@@ -14,7 +21,7 @@ export function ServiceIcon({
   icon,
   className = iconClass,
 }: {
-  icon: Service["icon"];
+  icon: ServiceIconName;
   className?: string;
 }) {
   switch (icon) {
@@ -30,6 +37,24 @@ export function ServiceIcon({
       );
     case "counselling":
       return <HeartIcon className={className} aria-hidden="true" />;
+    case "assessment":
+      return (
+        <ClipboardDocumentCheckIcon className={className} aria-hidden="true" />
+      );
+    case "consultation":
+      return (
+        <ChatBubbleLeftRightIcon className={className} aria-hidden="true" />
+      );
+    case "wellbeing":
+      return <SparklesIcon className={className} aria-hidden="true" />;
+    case "remote":
+      return <VideoCameraIcon className={className} aria-hidden="true" />;
+    case "forensic":
+      return <ScaleIcon className={className} aria-hidden="true" />;
+    case "evidence":
+      return <MagnifyingGlassIcon className={className} aria-hidden="true" />;
+    case "expert-consultation":
+      return <AcademicCapIcon className={className} aria-hidden="true" />;
   }
 }
 

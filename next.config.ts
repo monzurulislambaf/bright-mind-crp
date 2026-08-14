@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
       // (plus multipart overhead).
       bodySizeLimit: "45mb",
     },
+    // Turbopack's filesystem cache snapshots the build process environment
+    // into .next/cache, which embedded the SESSION_SECRET value into build
+    // artifacts and tripped Netlify's secrets scanning. The value must stay
+    // runtime-only, so skip persisting the cache for builds.
+    turbopackFileSystemCacheForBuild: false,
   },
 };
 

@@ -12,7 +12,7 @@ Build a production-ready **Bright Mind Psychology Care and Reporting** platform 
 
 ## Setup
 
-Copy `.env.example` to `.env.local` and fill in your own values. **Never** commit
+Copy `.env.example` to `.env` and fill in your own values. **Never** commit
 real credentials (MongoDB URIs, passwords, secrets) to this repository.
 
 ## Maintenance scripts

@@ -4,7 +4,7 @@
  * Usage:
  *   node scripts/create-admin.cjs --email admin@brightmind.co.uk --password 'YourPassword'
  *
- * Loads MONGODB_URI from .env.local, creates a MASTER_ADMIN user with an
+ * Loads MONGODB_URI from .env, creates a MASTER_ADMIN user with an
  * atomic BM-USR-NNNNNN ID, and writes an audit log entry. Safe to re-run:
  * it refuses to overwrite an existing user.
  */
@@ -14,11 +14,11 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 const MONGODB_URI = process.env.MONGODB_URI;
-if (!MONGODB_URI) {
-  console.error("MONGODB_URI is not defined in .env.local");
+
+  console.error("MONGODB_URI is not defined in .env");
   process.exit(1);
 }
 
